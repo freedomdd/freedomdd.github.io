@@ -3,7 +3,7 @@
 var oldTime, newTime, n, en, td, seconds, dif, h, ht, m, mt, s, st, show;
 en = document.getElementById('end');
 function start() {
-document.getElementById('end').innerHTML = "00:00:10";
+document.getElementById('end').innerHTML = "10:00:00";
 localStorage.setItem('f', '1');
 localStorage.removeItem('t');
 localStorage.setItem('n', +new Date);}
@@ -14,7 +14,7 @@ function end() {
   td = newTime - oldTime; 
   td /= 1000;
   seconds = Math.round(td);
-  dif = 10 - seconds;
+  dif = 600 - seconds;
   h = Math.floor(dif / 60 / 60);
   ht = h.toString().padStart(2, '0')
   m = Math.floor(dif / 60) - (h * 60);
