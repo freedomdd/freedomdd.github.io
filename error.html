@@ -1,9 +1,11 @@
-
+<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport'/>
 <script>
 var oldTime, newTime, n, en, td, seconds, dif, h, ht, m, mt, s, st, show;
 en = document.getElementById('end');
+
 function start() {
-document.getElementById('end').innerHTML = "10:00:00";
+document.getElementById('end').innerHTML = "00:00:05";
+document.getElementById('start').innerHTML = "RESTART"; 
 localStorage.setItem('f', '1');
 localStorage.removeItem('t');
 localStorage.setItem('n', +new Date);}
@@ -14,7 +16,7 @@ function end() {
   td = newTime - oldTime; 
   td /= 1000;
   seconds = Math.round(td);
-  dif = 600 - seconds;
+  dif = 5 - seconds;
   h = Math.floor(dif / 60 / 60);
   ht = h.toString().padStart(2, '0')
   m = Math.floor(dif / 60) - (h * 60);
@@ -24,16 +26,19 @@ function end() {
   show = ht + ':' + mt + ':' + st;
 
 if (dif <= 0) {
- document.getElementById('end').innerHTML = "Time Up";
+ document.getElementById('end').innerHTML = "FINISHED";
+ document.getElementById('start').innerHTML = "START"; 
  localStorage.setItem('t', '1');
  localStorage.removeItem('f');}
  
 else { document.getElementById('end').innerHTML = show;}}
 
 function cont(){
-if(localStorage.getItem('t')) {document.getElementById('end').innerHTML = "Time Up"; }
+if(localStorage.getItem('t')) {document.getElementById('end').innerHTML = "FINISHED"; }
 
-else {  document.getElementById('end').innerHTML = "Resuming";   }
+if(localStorage.getItem('f')) {document.getElementById('end').innerHTML = "LOADING"; 
+document.getElementById('start').innerHTML = "RESTART"; 
+}
 
 setInterval(function(){ if(localStorage.getItem('f')) {end();}}, 1000); 
 
@@ -41,9 +46,23 @@ setInterval(function(){ if(localStorage.getItem('f')) {end();}}, 1000);
 
 
 </script>
-<button onclick="start()">Start</button>
 
-<button onclick="end()">End</button>
+<style>
+button {border:none;}
+body {background-color:black;}
+.show {background-color:green;height:70px; color:white;border-radius:50px;font-size:20px; padding: 0px 20px 0px 20px;}
+.button {background-color:#27273f;height:50px; width:40%;color:white;border-radius:50px;font-size:20px;}
+#end {font-size:60px;}
+</style>
 
-<div id="end" style="font-size:100px;"></div>
+<div align="center">
+<button class="show">
+<div id="end">00:00:00</div>
+</button>
+<br/>
+<br/>
+<button class="button" id="start" onclick="start()">START</button>
+
+<button hidden class="button" onclick="end()">End</button>
+</div>
 <script> cont(); </script>
