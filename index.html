@@ -1,1 +1,62 @@
-Hello World
+<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
+<title>Rajdeep</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+
+
+Time remaining to the Annaprasan.<br/>
+<time>LOADING</time>
+
+
+
+<script>
+var time = document.getElementsByTagName('time');
+
+function ut() {
+  
+fd = new Date('11/06/2022 00:00 AM');
+nd = new Date(); 
+sd = Math.round((fd - nd)/1000);
+
+ 
+
+d = Math.floor(sd/86400);
+
+h = Math.floor((sd-(d*86400))/3600);
+
+
+m = Math.floor((sd-(d*86400)-(h*3600))/60);
+
+s = sd-(d*86400)-(h*3600)-(m*60);
+
+
+
+if (h<10){h="0"+h;}if (m<10){m="0"+m;}if (s<10){s="0"+s;}
+show = d + ' Days ' + h + ' Hour ' + m + ' Minutes ' + s + ' Seconds ';
+
+
+
+
+
+
+
+if (sd <= 0) {
+
+for (var i = 0; i <time.length; i++) {time[i].innerHTML = "00:00";}
+  
+}
+
+else {for (var i = 0; i <time.length; i++) {time[i].innerHTML = show;}
+
+}}
+
+function timeut(){
+for (var i = 0; i <time.length; i++) {time[i].innerHTML = "LOADING";}
+setInterval(function(){ ut();}, 1000);
+
+}
+setInterval(function(){ ut();}, 1000);
+</script>
+
