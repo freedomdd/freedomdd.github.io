@@ -1,50 +1,52 @@
 <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
-<title>Rajdeep</title>
+<title>রাজদীপের শুভ অন্নপ্রাশন</title>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+<style>
+@font-face {font-family: bengali; src: url(https://fonts.gstatic.com/s/galada/v14/H4cmBXyGmcjXlUXO5yY_0Lo.woff2) format('woff2');}
+bengali {font-family: bengali;}
+.annahead {text-align:center; height:50px; line-height:50px;
+border-radius:50px;
+color:white; 
+background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);}
+time {font-family: bengali;}
+</style>
 
-
-
-Time remaining to the Annaprasan.<br/>
-<time>LOADING</time>
-
-
+<div class='annahead'><bengali>Welcome;</bengali></div><br/>
+<div class='annahead'><bengali>রাজদীপের শুভ অন্নপ্রাশন </bengali></div><br/>
+<div class='annahead time'><time>সময় লোড হচ্ছে...</time></div>
 
 <script>
 var time = document.getElementsByTagName('time');
-
+var cl = '1';
 function ut() {
   
-fd = new Date('11/06/2022 00:00 AM');
+fd = new Date('11/06/2022 00:0 AM');
 nd = new Date(); 
 sd = Math.round((fd - nd)/1000);
-
- 
 
 d = Math.floor(sd/86400);
 
 h = Math.floor((sd-(d*86400))/3600);
-
 
 m = Math.floor((sd-(d*86400)-(h*3600))/60);
 
 s = sd-(d*86400)-(h*3600)-(m*60);
 
 
-
 if (h<10){h="0"+h;}if (m<10){m="0"+m;}if (s<10){s="0"+s;}
-show = d + ' Days ' + h + ' Hour ' + m + ' Minutes ' + s + ' Seconds ';
-
-
-
-
-
+show = d + ' দিন ' + h + ' ঘণ্টা ' + m + ' মিনিট ' + s + ' সেকেন্ড ';
 
 
 if (sd <= 0) {
 
-for (var i = 0; i <time.length; i++) {time[i].innerHTML = "00:00";}
+$('.time').fadeOut('slow').fadeIn('slow');
+
+
+for (var i = 0; i <time.length; i++) {time[i].innerHTML = "<bengali>আজ হল অন্নপ্রাশন!</bengali>";}
+
+cl = '0';
   
 }
 
@@ -57,6 +59,10 @@ for (var i = 0; i <time.length; i++) {time[i].innerHTML = "LOADING";}
 setInterval(function(){ ut();}, 1000);
 
 }
-setInterval(function(){ ut();}, 1000);
+setInterval(function(){
+
+if(cl==='1'){ut();}
+
+}, 1000);
 </script>
 
