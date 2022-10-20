@@ -1,28 +1,84 @@
 <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
-<title>রাজদীপের শুভ অন্নপ্রাশন</title>
+<title>Rajdeep</title>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <style>
+body {background-image: linear-gradient(to right, #051937, #14265b, #34317e, #5c389e, #8c38ba); }
+
 @font-face {font-family: bengali; src: url(https://fonts.gstatic.com/s/galada/v14/H4cmBXyGmcjXlUXO5yY_0Lo.woff2) format('woff2');}
+@font-face {font-family: bengali; src: url(https://fonts.gstatic.com/s/galada/v14/H4cmBXyGmcjXlUXO9SY_.woff2) format('woff2');}
 bengali {font-family: bengali;}
-.annahead {text-align:center; height:50px; line-height:50px;
+
+.cb{clear:both;}
+
+.annahead {text-align:center;
+height:50px;
+line-height:50px;
 border-radius:50px;
+margin:0 0 4px 0;
 color:white; 
-background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);}
+background-image: linear-gradient(to right, #043278, #23295f, #282148, #251c33, #1d1721);
+float:left; width:100%;}
+
+.timehead {
+text-align:center; 
+height:30px;
+line-height:35px;
+border-top-right-radius:5px;
+border-top-left-radius:5px;
+color:black; 
+background-color:white; 
+padding:0px 0px 0px 0px;
+font-family:bengali; }
+
+.timebody {text-align:center;
+height:50px;
+line-height:50px;
+border-bottom-right-radius:5px;
+border-bottom-left-radius:5px;
+color:white;
+background-color:black; padding:2px 0px 2px 0px; }
+
 time {font-family: bengali;}
+mtime{color:white;width:calc(25% - 2.5px); display:inline-block;background-color:red; border-radius:5px;margin: 0px 1px 0px 1px}
+
+mainbody{ text-align:justify; 
+width:calc(100% - 10px);
+display:block;
+border-bottom-right-radius:5px;
+border-bottom-left-radius:5px;
+color:black; 
+background-color:white; 
+padding:5px 5px 5px 5px;
+font-family:bengali;}
+
+.gtright{text-align:right}
 </style>
 
-<div class='annahead'><bengali>Welcome;</bengali></div><br/>
+<div class='annahead'><bengali>Welcome !</bengali></div><br/>
 <div class='annahead'><bengali>রাজদীপের শুভ অন্নপ্রাশন </bengali></div><br/>
-<div class='annahead time'><time>সময় লোড হচ্ছে...</time></div>
+<div class='cb'></div>
+<div class='timehead'>সময় বাকী আছে</div>
+<div class='timebody time'><time>সময় লোড হচ্ছে...</time></div>
+
+
+<div class='timehead'>সবিনয় নিবেদন</div>
+<mainbody>
+আগামী ১৯ শে কার্ত্তিক ১৪২৯ সাল (ইং-০৬/১১/২০২২) রবিবার আমার একমাত্র পুত্র কল্যাণীয় রাজদীপ-এর শুভ অন্নপ্রাশন অনুষ্ঠিত হবে।<br/>
+এতদুপলক্ষে উক্ত দিবসে মধ্যাহ্নে মদীয় আঁচুড়ি বাসভবনে আপনারা উপস্থিত থেকে শুভকার্যাদি সুসম্পন্ন করিয়ে আমার পুত্রকে আশীর্বাদ প্রদান করে বাধিত করবেন।
+<div class='gtright'>পত্রদ্বারা নিমন্ত্রনের ত্রুটি মার্জনীয়। <br/>
+ইতি, রাজেন্দ্র প্রসাদ ঘোষাল </div>
+</mainbody>
 
 <script>
 var time = document.getElementsByTagName('time');
 var cl = '1';
+
+$('time').delay('500').fadeOut('slow');
 function ut() {
   
-fd = new Date('11/06/2022 00:0 AM');
+fd = new Date('10/22/2022 01:2 AM');
 nd = new Date(); 
 sd = Math.round((fd - nd)/1000);
 
@@ -36,7 +92,7 @@ s = sd-(d*86400)-(h*3600)-(m*60);
 
 
 if (h<10){h="0"+h;}if (m<10){m="0"+m;}if (s<10){s="0"+s;}
-show = d + ' দিন ' + h + ' ঘণ্টা ' + m + ' মিনিট ' + s + ' সেকেন্ড ';
+show = '<mtime>'+ d + ' দিন</mtime><mtime> ' + h + ' ঘণ্টা</mtime><mtime> ' + m + ' মিনিট </mtime><mtime>' + s + ' সেকেন্ড </mtime>';
 
 
 if (sd <= 0) {
@@ -51,6 +107,7 @@ cl = '0';
 }
 
 else {for (var i = 0; i <time.length; i++) {time[i].innerHTML = show;}
+$('time').fadeIn('slow');
 
 }}
 
