@@ -1,5 +1,5 @@
 <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
-<title>রাজদীপের শুভ অন্নপ্রাশন</title>
+<title>Rajdeep</title>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -30,7 +30,9 @@ border-top-left-radius:5px;
 color:black; 
 background-color:white; 
 padding:0px 0px 0px 0px;
-font-family:bengali; }
+font-family:bengali;
+border:0px solid black;
+ }
 
 .timebody {text-align:center;
 height:50px;
@@ -54,20 +56,38 @@ padding:5px 5px 5px 5px;
 font-family:bengali;}
 
 .gtright{text-align:right}
+
+nbody{ text-align:center; 
+width:calc(100% - 10px);
+display:block;
+border-bottom-right-radius:8px;
+border-bottom-left-radius:8px;
+color:white; 
+background-color:blue; 
+padding:5px 5px 5px 5px;
+font-family:bengali;}
 </style>
 
-<div class='annahead'><bengali>Welcome !</bengali></div><br/>
+
+<div class='timehead'>To,</div>
+<nbody>
+<name></name>
+</nbody>
+
+
+<img style='width:200px;margin:4px 0 4px calc(50% - 100px);' src='https://cdn.jsdelivr.net/gh/freedomdd/freedomdd.github.io@main/rajdeep/rajdeep-round-1.png'/>
 <div class='annahead'><bengali>রাজদীপের শুভ অন্নপ্রাশন </bengali></div><br/>
+
 <div class='cb'></div>
 <div class='timehead'>সময় বাকী আছে</div>
 <div class='timebody time'><time>সময় লোড হচ্ছে...</time></div>
 
 
-<div class='timehead'>সবিনয় নিবেদন</div>
+<div class='timehead' style='border-bottom-width:2px;'>সবিনয় নিবেদন</div>
 <mainbody>
 আগামী ১৯ শে কার্ত্তিক ১৪২৯ সাল (ইং-০৬/১১/২০২২) রবিবার আমাদের একমাত্র পুত্র কল্যাণীয় রাজদীপ-এর শুভ অন্নপ্রাশন অনুষ্ঠিত হবে।<br/>
-এতদুপলক্ষে উক্ত দিবসে মধ্যাহ্নে মদীয় আঁচুড়ি বাসভবনে আপনারা উপস্থিত থেকে শুভকার্যাদি সুসম্পন্ন করিয়ে আমার পুত্রকে আশীর্বাদ প্রদান করে বাধিত করবেন।
-<div class='gtright'>ইতি, মৌসুমী ও রাজেন্দ্র<br/>বৈদ্যুতিন নিমন্ত্রনের ত্রুটি মার্জনীয়।</div>
+এতদুপলক্ষে উক্ত দিবসে মধ্যাহ্নে মদীয় আঁচুড়ি বাসভবনে আপনারা উপস্থিত থেকে শুভকার্যাদি সুসম্পন্ন করিয়ে এবং আমাদের পুত্রকে আশীর্বাদ প্রদান করে বাধিত করবেন।
+<div class='gtright'>ইতি, মৌসুমী ও রাজেন্দ্র<br/>বৈদ্যুতিন পন্থায় নিমন্ত্রনের ত্রুটি মার্জনীয়।</div>
 </mainbody>
 
 <script>
@@ -120,5 +140,11 @@ setInterval(function(){
 if(cl==='1'){ut();}
 
 }, 1000);
+
+
+var str = window.location.href,ur = new URL(str),ccc = ur.searchParams.get("c");
+
+document.querySelector('name').innerHTML = ccc;
+
 </script>
 
