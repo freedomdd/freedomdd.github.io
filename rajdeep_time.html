@@ -1,0 +1,147 @@
+<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport' />
+<title>TIMER TEST</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+body {background-image: linear-gradient(to right, #051937, #14265b, #34317e, #5c389e, #8c38ba); }
+
+@font-face {font-family: bengali; src: url(https://fonts.gstatic.com/s/galada/v14/H4cmBXyGmcjXlUXO5yY_0Lo.woff2) format('woff2');}
+@font-face {font-family: bengali; src: url(https://fonts.gstatic.com/s/galada/v14/H4cmBXyGmcjXlUXO9SY_.woff2) format('woff2');}
+bengali {font-family: bengali;}
+
+.cb{clear:both;}
+
+.annahead {text-align:center;
+height:50px;
+line-height:50px;
+border-radius:50px;
+margin:0 0 4px 0;
+color:white; 
+background-image: linear-gradient(to right, #043278, #23295f, #282148, #251c33, #1d1721);
+float:left; width:100%;}
+
+.timehead {
+text-align:center; 
+height:30px;
+line-height:35px;
+border-top-right-radius:5px;
+border-top-left-radius:5px;
+color:black; 
+background-color:white; 
+padding:0px 0px 0px 0px;
+font-family:bengali;
+border:0px solid black;
+ }
+
+.timebody {text-align:center;
+height:50px;
+line-height:50px;
+border-bottom-right-radius:5px;
+border-bottom-left-radius:5px;
+color:white;
+background-color:black; padding:2px 0px 2px 0px; }
+
+time {font-family: bengali;}
+mtime{color:white;width:calc(25% - 2.5px); display:inline-block;
+background-color: #DE0564;
+border-radius:5px;margin: 0px 1px 0px 1px}
+
+mainbody{ text-align:justify; 
+width:calc(100% - 10px);
+display:block;
+border-bottom-right-radius:5px;
+border-bottom-left-radius:5px;
+color:black; 
+background-color:white; 
+padding:5px 5px 5px 5px;
+font-family:bengali;}
+
+.gtright{text-align:right}
+
+nbody{ text-align:center; 
+width:calc(100% - 10px);
+display:block;
+border-bottom-right-radius:8px;
+border-bottom-left-radius:8px;
+color:white; 
+background-color:blue; 
+padding:5px 5px 5px 5px;
+font-family:bengali;}
+</style>
+
+
+<div class='timehead'>To,</div>
+<nbody>
+<name></name>
+</nbody>
+
+
+<img style='width:200px;margin:4px 0 4px calc(50% - 100px);' src='https://cdn.jsdelivr.net/gh/freedomdd/freedomdd.github.io@main/rajdeep/rajdeep-round-1.png'/>
+<div class='annahead'><bengali>রাজদীপের শুভ অন্নপ্রাশন </bengali></div><br/>
+
+<div class='cb'></div>
+<div class='timehead'>সময় বাকী আছে</div>
+<div class='timebody time'><time>সময় লোড হচ্ছে...</time></div>
+
+
+<div class='timehead' style='border-bottom-width:2px;'>সবিনয় নিবেদন</div>
+
+<script>
+var time = document.getElementsByTagName('time');
+var cl = '1';
+
+$('time').delay('500').fadeOut('slow');
+function ut() {
+  
+fd = new Date('11/06/2022 00:00 AM');
+nd = new Date(); 
+sd = Math.round((fd - nd)/1000);
+
+d = Math.floor(sd/86400);
+
+h = Math.floor((sd-(d*86400))/3600);
+
+m = Math.floor((sd-(d*86400)-(h*3600))/60);
+
+s = sd-(d*86400)-(h*3600)-(m*60);
+
+
+if (h<10){h="0"+h;}if (m<10){m="0"+m;}if (s<10){s="0"+s;}
+show = '<mtime>'+ d + ' দিন</mtime><mtime> ' + h + ' ঘণ্টা</mtime><mtime> ' + m + ' মিনিট </mtime><mtime>' + s + ' সেকেন্ড </mtime>';
+
+
+if (sd <= 0) {
+
+$('.time').fadeOut('slow').fadeIn('slow');
+
+
+for (var i = 0; i <time.length; i++) {time[i].innerHTML = "<bengali>আজ হল অন্নপ্রাশন!</bengali>";}
+
+cl = '0';
+  
+}
+
+else {for (var i = 0; i <time.length; i++) {time[i].innerHTML = show;}
+$('time').fadeIn('slow');
+
+}}
+
+function timeut(){
+for (var i = 0; i <time.length; i++) {time[i].innerHTML = "LOADING";}
+setInterval(function(){ ut();}, 1000);
+
+}
+setInterval(function(){
+
+if(cl==='1'){ut();}
+
+}, 1000);
+
+
+var str = window.location.href,ur = new URL(str),ccc = ur.searchParams.get("c");
+
+document.querySelector('name').innerHTML = ccc;
+
+</script>
+
