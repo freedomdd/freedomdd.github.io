@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Realtime Database</title>
+</head>
+<body>
+    <h1>Firebase Realtime Database Table</h1>
+
+    <table id="data-table" border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Info</th>
+                <th>Amount</th>
+                <th>Agent</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <!-- Data will be loaded here -->
+        </tbody>
+    </table>
+
+    <h2>Add New Data</h2>
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="info" placeholder="Info">
+    <input type="number" id="amount" placeholder="Amount">
+    <input type="text" id="agent" placeholder="Agent">
+    <button onclick="addData()">Add Data</button>
+
+    <script type="module">
+        // Import Firebase app and database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD31LB_AqMNXPTButeHh6BJKY0NVJ3LKWQ",
+            authDomain: "mbixreal.firebaseapp.com",
+            projectId: "mbixreal",
+            storageBucket: "mbixreal.appspot.com",
+            messagingSenderId: "862474308645",
+            appId: "1:862474308645:web:8158f72ee204be4c2d43cc",
+            databaseURL: "https://mbixreal-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Fetch and display data from 'id-3' collection
+        function fetchData() {
+            const dbRef = ref(database, 'id-3');
+            onValue(dbRef, (snapshot) => {
+                const data = snapshot.val();
+                const tableBody = document.getElementById('table-body');
+                tableBody.innerHTML = ''; // Clear previous data
+
+                // Check if there's data, otherwise display a message
+                if (data) {
+                    for (let id in data) {
+                        const user = data[id];
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${user.name}</td>
+                                <td>${user.info}</td>
+                                <td>${user.amount}</td>
+                                <td>${user.agent}</td>
+                                <td>
+                                    <button onclick="editData('${id}', '${user.name}', '${user.info}', ${user.amount}, '${user.agent}')">Edit</button>
+                                    <button onclick="deleteData('${id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="5">No data available</td></tr>';
+                }
+            });
+        }
+
+        // Add new data to 'id-3' collection
+        function addData() {
+            const name = document.getElementById('name').value;
+            const info = document.getElementById('info').value;
+            const amount = document.getElementById('amount').value;
+            const agent = document.getElementById('agent').value;
+
+            if (name && info && amount && agent) {
+                const dbRef = ref(database, 'id-3');
+                const newUserRef = push(dbRef);
+                set(newUserRef, {
+                    name: name,
+                    info: info,
+                    amount: amount,
+                    agent: agent
+                });
+
+                // Clear input fields after adding data
+                document.getElementById('name').value = '';
+                document.getElementById('info').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('agent').value = '';
+            } else {
+                alert('Please fill out all fields');
+            }
+        }
+
+        // Edit existing data in 'id-3' collection
+        function editData(id, name, info, amount, agent) {
+            document.getElementById('name').value = name;
+            document.getElementById('info').value = info;
+            document.getElementById('amount').value = amount;
+            document.getElementById('agent').value = agent;
+
+            document.querySelector('button[onclick="addData()"]').innerText = 'Update Data';
+            document.querySelector('button[onclick="addData()"]').setAttribute('onclick', `updateData('${id}')`);
+        }
+
+        // Update existing data in 'id-3' collection
+        function updateData(id) {
+            const name = document.getElementById('name').value;
+            const info = document.getElementById('info').value;
+            const amount = document.getElementById('amount').value;
+            const agent = document.getElementById('agent').value;
+
+            if (name && info && amount && agent) {
+                const userRef = ref(database, `id-3/${id}`);
+                update(userRef, {
+                    name: name,
+                    info: info,
+                    amount: amount,
+                    agent: agent
+                });
+
+                // Reset input fields and button after updating data
+                document.getElementById('name').value = '';
+                document.getElementById('info').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('agent').value = '';
+                document.querySelector('button[onclick^="updateData"]').innerText = 'Add Data';
+                document.querySelector('button[onclick^="updateData"]').setAttribute('onclick', `addData()`);
+            } else {
+                alert('Please fill out all fields');
+            }
+        }
+
+        // Delete data from 'id-3' collection
+        function deleteData(id) {
+            const userRef = ref(database, `id-3/${id}`);
+            remove(userRef);
+        }
+
+        // Fetch data when the page loads
+        fetchData();
+
+        // Make functions available globally
+        window.addData = addData;
+        window.editData = editData;
+        window.updateData = updateData;
+        window.deleteData = deleteData;
+    </script>
+</body>
+</html>
