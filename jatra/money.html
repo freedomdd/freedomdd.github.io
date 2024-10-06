@@ -251,7 +251,7 @@ function fetchData() {
             // Find the last added row and show alert if it's new
             const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
             
-            if (latestEntryId !== localStorage.getItem("LASTID") && localStorage.getItem("LASTID")) {
+            if (latestEntryId !== localStorage.getItem("LASTID")) {
                 const latestUser = data[latestEntryId];
                 showFinal(latestUser.name,latestUser.surName,latestUser.amount);
                 localStorage.setItem("LASTID",latestEntryId);  // Update the lastInsertedId
