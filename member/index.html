@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বৌ হয়েছে রঙের বিবি - চাঁদা (সদস্য)</title>
+    <style>
+        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none;}
+        .tableWrapper { width: calc(100% - 10px); margin-left: 5px; }
+        .mainTable { width: 100%; background-color: white; border-collapse: separate; border-spacing: 0; border: 1px solid #d6d6d6; border-radius: 15px; font-size:13px;}
+        .mainTable td {color: #666666; border: 1px solid #d6d6d6; padding: 10px; text-align: center; }
+        .mainTable .firstTr td {background-color: #6c5880; color: #ffffff;}
+        .mainTable tr:first-child td:last-child {border-top-right-radius: 14px;}
+        .mainTable tr:first-child td:first-child {border-top-left-radius: 14px;}
+        #table-body tr td { border-radius: 0px; }
+        #table-body tr:last-child td:last-child { border-bottom-right-radius: 14px; }
+        #table-body tr:last-child td:first-child { border-bottom-left-radius: 14px; }
+        body {counter-set: s;}
+        #table-body tr:nth-child(n+1) td:first-child:after {counter-increment: s; content: counter(s);}
+        .titletext {text-align: center;}
+        /* Dialog box style */
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .dialogFinal {
+            display: none;
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .dialog-header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .dialog input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #d6d6d6;
+        }
+
+        .dialog button {
+            padding: 8px 12px;
+            border: none;
+            background-color: #6c5880;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .dialog button.cancel {
+            background-color: #d9534f;
+        }
+        .dialog button#delete-button {
+            float: right;
+            margin-right: 0px;
+        }
+        .editButton {
+            border: none;
+            background-color: #2a99da;
+            color: white;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            line-height: 10px;
+            border-radius: 5px;
+        }
+
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Fixed position for the Add New Data button */
+        .fixed-add-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #6c5880;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .right {right: 100px;}
+
+        .fixed-add-button:hover {
+            background-color: #59476b;
+        }
+
+        .search-container { text-align: center; margin-bottom: 10px; }
+        .search-input { padding: 8px; width: calc(100% - 30px); border-radius: 5px; border: 1px solid #d6d6d6; }
+
+    </style>
+</head>
+<body>
+    <hr/>
+    <div class="titletext">বৌ হয়েছে রঙের বিবি - চাঁদা (সদস্য)</div>
+    <hr/>
+
+    <div class="search-container">
+        <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
+    </div>
+
+    <div class="tableWrapper">
+        <table id="data-table" class="mainTable list">
+            <tr class="firstTr">
+                <td>#</td>
+                <td>নাম</td>
+                
+                <td>টাকা</td>
+                <td>+</td>
+            </tr>
+            <tbody id="table-body">
+                <tr>
+                    <td></td>
+                    <td>LOADING</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br><br><br><br><br><br>
+
+    <!-- Fixed "Add New Data" button -->
+    <button class="fixed-add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
+    <button class="fixed-add-button" onclick="downloadPDF()">PDF</button>
+
+    <!-- Dialog for adding/editing data -->
+<div id="dialog" class="dialog">
+    <div class="dialog-header" id="dialog-header">Add/Edit Data</div>
+    <input type="text" id="dialog-name" placeholder="নাম">
+    <input type="text" id="dialog-surName" placeholder="পদবি (English)">
+    <input type="number" id="dialog-amount" placeholder="Amount">
+    <input type="text" id="dialog-agent" placeholder="Collector" value="Jatra Sangstha">
+    <button id="save-button" onclick="saveDialogData()">Save</button>
+    <button class="cancel" onclick="history.back()">Cancel</button>
+    <button id="delete-button" class="cancel" style="display: none;" onclick="deleteDialogData()">Delete</button> <!-- New Delete Button -->
+</div>
+
+<div id="dialogFinal" class="dialogFinal">
+    <div class="dialog-info" id="dialog-info"></div>
+    <hr/>
+    <button onclick="hideOkay()">Okay</div>
+</div>
+
+
+    <!-- Overlay to darken background when dialog is active -->
+    <div id="dialog-overlay" class="dialog-overlay"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD31LB_AqMNXPTButeHh6BJKY0NVJ3LKWQ",
+            authDomain: "mbixreal.firebaseapp.com",
+            projectId: "mbixreal",
+            storageBucket: "mbixreal.appspot.com",
+            messagingSenderId: "862474308645",
+            appId: "1:862474308645:web:8158f72ee204be4c2d43cc",
+            databaseURL: "https://mbixreal-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let currentEditId = null;  // To track if editing or adding
+
+        // Fetch and display data from Firebase, sorted by surNamerow
+function fetchData() {
+    const dbRef = ref(database, 'id-4');
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+
+        let totalAmount = 0; // Initialize total amount
+
+        if (data) {
+            // Convert data to array and sort by surName first, and then by name if surNames are the same
+            const sortedData = Object.entries(data).sort(([, a], [, b]) => {
+                const surNameComparison = a.surName.localeCompare(b.surName);
+                if (surNameComparison === 0) {
+                    // If surNames are the same, sort by name
+                    return a.name.localeCompare(b.name);
+                }
+                return surNameComparison;
+            });
+
+            sortedData.forEach(([id, user]) => {
+                totalAmount += parseFloat(user.amount); // Add each amount to the total
+
+                tableBody.innerHTML += `
+                    <tr id="row-${id}" class="data-row">
+                        <td></td>
+                        <td>${user.name} ${user.surName}</td>
+                        <td>${user.amount}</td>
+                        <td>
+                            <button class="editButton" onclick="showEditDialog('${id}', '${user.name}', '${user.surName}', ${user.amount}, '${user.agent}')">✎</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Add a row at the end to display the total amount
+            tableBody.innerHTML += `
+                <tr>
+                    <td style="color: transparent"></td>
+                    <td style="font-weight: bold;">Total</td>
+                    <td style="font-weight: bold;">${totalAmount.toFixed(2)}</td>
+                    <td></td>
+                </tr>
+            `;
+
+            // Find the last added row and show alert if it's new
+            const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
+            
+            if (latestEntryId !== localStorage.getItem("LASTID")) {
+                const latestUser = data[latestEntryId];
+                showFinal(latestUser.name,latestUser.surName,latestUser.amount);
+                localStorage.setItem("LASTID",latestEntryId);  // Update the lastInsertedId
+            }
+
+
+        } else {
+            tableBody.innerHTML = '<tr><td></td><td colspan="3">No data available</td></tr>';
+        }
+    });
+}
+
+
+
+
+        function showAddDialog() {
+            currentEditId = null;
+            document.getElementById('dialog-header').innerText = 'Add New Data';
+            document.getElementById('dialog-name').value = '';
+            document.getElementById('dialog-surName').value = '';
+            document.getElementById('dialog-amount').value = '';
+            document.getElementById('dialog-agent').value = 'Jatra Sangstha';
+            // Hide the delete button in add mode
+    document.getElementById('delete-button').style.display = 'none';
+            showDialog();
+            document.getElementById('dialog-name').focus();
+        }
+
+        function showEditDialog(id, name, surName, amount, agent) {
+            currentEditId = id;
+            document.getElementById('dialog-header').innerText = 'Edit Data';
+            document.getElementById('dialog-name').value = name;
+            document.getElementById('dialog-surName').value = surName;
+            document.getElementById('dialog-amount').value = amount;
+            document.getElementById('dialog-agent').value = agent;
+            // Show the delete button in edit mode
+    document.getElementById('delete-button').style.display = 'inline-block';
+            showDialog();
+            document.getElementById('dialog-amount').focus();
+        }
+
+        function saveDialogData() {
+    const name = document.getElementById('dialog-name').value.toUpperCase();
+    const surName = document.getElementById('dialog-surName').value.toUpperCase();
+    const amount = document.getElementById('dialog-amount').value;
+    const agent = document.getElementById('dialog-agent').value.toUpperCase();
+    const saveButton = document.getElementById('save-button');
+
+    if (name && surName && amount && agent) {
+        // Disable the save button and change its text to "Saving..."
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+
+        if (currentEditId) {
+            // Update existing data
+            const userRef = ref(database, `id-4/${currentEditId}`);
+            update(userRef, { name, surName, amount, agent }).then(() => {
+                return fetchData(); // Fetch data after updating
+            }).then(() => {
+                history.back(); // Hide dialog after fetching
+            }).catch((error) => {
+                alert('Error updating data: ' + error.message);
+            }).finally(() => {
+                // Re-enable the button and reset its text
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save';
+            });
+        } else {
+            // Add new data
+            const dbRef = ref(database, 'id-4');
+            const newUserRef = push(dbRef);
+            set(newUserRef, { name, surName, amount, agent }).then(() => {
+                return fetchData(); // Fetch data after adding
+            }).then(() => {
+                history.back(); // Hide dialog after fetching
+            }).catch((error) => {
+                alert('Error adding data: ' + error.message);
+            }).finally(() => {
+                // Re-enable the button and reset its text
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save';
+            });
+        }
+    } else {
+        alert('Please fill out all fields');
+    }
+}
+
+
+        function deleteDialogData() {
+    if (currentEditId) {
+        // Show a confirmation dialog before proceeding with the deletion
+        const isConfirmed = confirm("Confirm Full Delete?");
+
+        if (isConfirmed) {
+            const userRef = ref(database, `id-4/${currentEditId}`);
+            remove(userRef).then(() => {
+                fetchData(); // Re-fetch data after deletion
+                history.back();
+            });
+        } else {
+            
+        }
+    }
+}
+
+        function showDialog() {
+            location.hash = "go";
+            document.getElementById('dialog').style.display = 'block';
+            document.getElementById('dialog-overlay').style.display = 'block';
+        }
+
+        function hideDialog() {
+            document.getElementById('dialog').style.display = 'none';
+            document.getElementById('dialog-overlay').style.display = 'none';
+        }
+
+        function showFinal(name,surName,amount) {
+            
+            document.getElementById('dialogFinal').style.display = 'block';
+            document.getElementById('dialog-info').innerText = `
+                    ✔ ${name} ${surName} : Rs.${amount}
+                `;
+        }
+        function hideOkay() {
+
+            document.getElementById('dialogFinal').style.display = 'none';
+        }
+
+        fetchData(); // Initial data load
+
+        window.showAddDialog = showAddDialog;
+        window.saveDialogData = saveDialogData;
+        window.showEditDialog = showEditDialog;
+        window.hideDialog = hideDialog;
+        window.deleteDialogData = deleteDialogData;
+        window.downloadPDF = downloadPDF;
+        window.filterTable = filterTable;
+        window.hideOkay = hideOkay;
+
+
+        onhashchange = function (){ 
+      if(location.hash=='#go'){
+       } else{ hideDialog();}}
+
+       function downloadPDF() {
+    // Get the current date and time
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    // Format the filename as PDF-DD-MM-YYYY-HH-MM-SS.pdf
+    const filename = `PDF-${day}-${month}-${year}-${hours}-${minutes}-${seconds}.pdf`;
+
+    // Select the table or the entire section you want to convert to PDF
+    const element = document.querySelector('.tableWrapper');
+    
+    // Options for html2pdf
+    const options = {
+        margin:       0.5,           // Margin in inches
+        filename:     filename,      // Use dynamically generated filename
+        image:        { type: 'jpeg', quality: 1 }, // Image quality settings
+        html2canvas:  { scale: 2 },   // High resolution
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }, // PDF format
+        pagebreak:    { mode: ['avoid-all'] }, // Avoid splitting large elements across pages
+    };
+
+    // Call html2pdf to generate and download the PDF
+    html2pdf().set(options).from(element).save();
+}
+
+// Filter table based on search input
+function filterTable() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#table-body .data-row');
+
+            rows.forEach(row => {
+                const nameCell = row.cells[1].innerText.toLowerCase();
+                row.style.display = nameCell.includes(input) ? '' : 'none';
+            });
+        }
+
+
+
+    </script>
+</body>
+</html>
