@@ -4,9 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>বৌ হয়েছে রঙের বিবি - চাঁদা</title>
+
+    
+
     <style>
-        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; display:none;}
-        .tableWrapper { width: calc(100% - 10px); margin-left: 5px; }
+        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none;}
+
+        #pinDialog {
+      display: none;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: calc(100% - 60px);
+      margin-left:10px;
+    }
+    #pinDialog input {
+      padding: 10px;
+      font-size: 18px;
+      margin-bottom: 10px;
+      width: calc(100% - 20px);
+    }
+    #pinDialog button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+
+        #tableWrapper { width: calc(100% - 10px); margin-left: 5px; display: none; text-align: center;}
         .mainTable { width: 100%; background-color: white; border-collapse: separate; border-spacing: 0; border: 1px solid #d6d6d6; border-radius: 15px; font-size:13px;}
         .mainTable td {color: #666666; border: 1px solid #d6d6d6; padding: 10px; text-align: center; }
         .mainTable .firstTr td {background-color: #6c5880; color: #ffffff;}
@@ -103,9 +130,7 @@
 
         /* Fixed position for the Add New Data button */
         .fixed-add-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            margin-bottom: 5px;
             padding: 10px 20px;
             background-color: #6c5880;
             color: white;
@@ -115,7 +140,6 @@
             font-size: 16px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .right {right: 100px;}
 
         .fixed-add-button:hover {
             background-color: #59476b;
@@ -127,15 +151,21 @@
     </style>
 </head>
 <body>
+
+   
     <hr/>
     <div class="titletext">বৌ হয়েছে রঙের বিবি - চাঁদা আদায়</div>
     <hr/>
 
-    <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
-    </div>
+    
 
-    <div class="tableWrapper">
+    <div id="tableWrapper">
+        <!-- Fixed "Add New Data" button -->
+    <button class="fixed-add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
+    <button class="fixed-add-button" onclick="downloadPDF()">PDF</button>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
+        </div>
         <table id="data-table" class="mainTable list">
             <tr class="firstTr">
                 <td>#</td>
@@ -154,11 +184,17 @@
             </tbody>
         </table>
     </div>
+     <!-- Custom PIN input dialog -->
+     
+  <div id="pinDialog">
+    <h3>Enter your 4-digit PIN</h3>
+    <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN" />
+    <br />
+    <button onclick="submitPin()">Submit</button>
+  </div>
     <br><br><br><br><br><br>
 
-    <!-- Fixed "Add New Data" button -->
-    <button class="fixed-add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
-    <button class="fixed-add-button" onclick="downloadPDF()">PDF</button>
+    
 
     <!-- Dialog for adding/editing data -->
 <div id="dialog" class="dialog">
@@ -181,6 +217,55 @@
 
     <!-- Overlay to darken background when dialog is active -->
     <div id="dialog-overlay" class="dialog-overlay"></div>
+
+
+    <script>
+        const predefinedPin = "1234";  // Predefined PIN
+    
+        // Function to show the PIN input dialog
+        function showPinDialog() {
+          document.getElementById('pinDialog').style.display = 'block';
+        }
+    
+        // Function to hide the PIN input dialog
+        function hidePinDialog() {
+          document.getElementById('pinDialog').style.display = 'none';
+          document.getElementById('tableWrapper').style.display = 'block';
+        }
+    
+        // Function to verify the PIN entered by the user
+        function submitPin() {
+          const userPin = document.getElementById('pinInput').value;
+          
+          if (userPin === "") {
+            alert("PIN is required. Please enter your 4-digit PIN.");
+            return;
+          }
+    
+          if (userPin === predefinedPin) {
+            sessionStorage.setItem("pinVerified", "true");
+            hidePinDialog();  // Close the dialog on success
+            location.reload();  // Reload the page after successful verification
+          } else {
+            alert("Incorrect PIN. Please try again.");
+            document.getElementById('pinInput').value = '';  // Clear input field
+          }
+        }
+    
+        // Function to run when the page loads
+        window.onload = function() {
+          if (sessionStorage.getItem("pinVerified") !== "true") {
+            showPinDialog();  // Show the PIN dialog if not verified
+          } else {hidePinDialog();}
+        };
+    
+        // Your fetchData function placeholder
+        function fetchData() {
+          console.log("Fetching data after PIN verification...");
+          // Add your custom data fetching logic here
+        }
+      </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
     <script type="module">
@@ -381,6 +466,7 @@ function fetchData() {
             document.getElementById('dialogFinal').style.display = 'none';
         }
 
+
         fetchData(); // Initial data load
 
         window.showAddDialog = showAddDialog;
@@ -411,7 +497,7 @@ function fetchData() {
     const filename = `PDF-${day}-${month}-${year}-${hours}-${minutes}-${seconds}.pdf`;
 
     // Select the table or the entire section you want to convert to PDF
-    const element = document.querySelector('.tableWrapper');
+    const element = document.getElementById('tableWrapper');
     
     // Options for html2pdf
     const options = {
