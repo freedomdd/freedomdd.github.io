@@ -3,10 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বৌ হয়েছে রঙের বিবি - চাঁদা (সদস্য)</title>
+    <title>বৌ হয়েছে রঙের বিবি - চাঁদা (MEMBERS)</title>
+
     <style>
-        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none;}
-        .tableWrapper { width: calc(100% - 10px); margin-left: 5px; }
+        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
+
+        #pinDialog {
+      display: none;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: calc(100% - 60px);
+      margin-left:10px;
+    }
+    #pinDialog input {
+      padding: 10px;
+      font-size: 18px;
+      margin-bottom: 10px;
+      width: calc(100% - 20px);
+    }
+    #pinDialog button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+
+        #tableWrapper { width: calc(100% - 10px); margin-left: 5px; display: none; text-align: center;}
         .mainTable { width: 100%; background-color: white; border-collapse: separate; border-spacing: 0; border: 1px solid #d6d6d6; border-radius: 15px; font-size:13px;}
         .mainTable td {color: #666666; border: 1px solid #d6d6d6; padding: 10px; text-align: center; }
         .mainTable .firstTr td {background-color: #6c5880; color: #ffffff;}
@@ -37,16 +62,31 @@
         .dialogFinal {
             display: none;
             position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            border: 1px solid #d6d6d6;
+            top: 10px;
+            left: calc(10% - 20px);
+            background-color: #375169;
+            color: #eff7ff;
+            border: none;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            width: 300px;
+            width: 80%;
+        }
+
+        .dialog-info {
+            line-height: 20px;
+        }
+        .dialogFinal hr {
+            border-color: #5a82a8;
+        }
+        .newAdd {
+            background-color: #5a82a8;
+            color: white;
+            border:none;
+            border-radius: 3px;
+            height: 40px;
+            width: 80px;
         }
 
         .dialog-header {
@@ -76,6 +116,7 @@
             background-color: #d9534f;
         }
         .dialog button#delete-button {
+            display: none;
             float: right;
             margin-right: 0px;
         }
@@ -100,42 +141,67 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+        fixedBottom {
+            
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
 
         /* Fixed position for the Add New Data button */
-        .fixed-add-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+        .add-button {
+            margin-bottom: 5px;
             padding: 10px 20px;
             background-color: #6c5880;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .right {right: 100px;}
 
-        .fixed-add-button:hover {
+        .add-button:hover {
             background-color: #59476b;
         }
 
         .search-container { text-align: center; margin-bottom: 10px; }
         .search-input { padding: 8px; width: calc(100% - 30px); border-radius: 5px; border: 1px solid #d6d6d6; }
+        @font-face {font-display: swap;font-family: 'Tiro';src: url(https://fonts.gstatic.com/s/tirobangla/v6/IFSgHe1Tm95E3O8b5i2V8PGo80Luuw.woff2) format('woff2');}
+
+       
+        @media print {
+          
+            button, .search-container {
+                display: none; background-color: white;
+            }
+            html body {background-color: white;}
+            
+            td {line-height: 0px;}
+
+        }
 
     </style>
 </head>
 <body>
+
+   
     <hr/>
-    <div class="titletext">বৌ হয়েছে রঙের বিবি - চাঁদা (সদস্য)</div>
+    <div class="titletext">বৌ হয়েছে রঙের বিবি - চাঁদা (MEMBERS)</div>
     <hr/>
 
-    <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
-    </div>
+    
 
-    <div class="tableWrapper">
+    <div id="tableWrapper">
+        <!-- Fixed "Add New Data" button -->
+         <fixedBottom>
+    <button class="add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
+    <button class="add-button" onclick="downloadPDF()">PRINT</button>
+</fixedBottom>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
+        </div>
         <table id="data-table" class="mainTable list">
             <tr class="firstTr">
                 <td>#</td>
@@ -153,12 +219,25 @@
                 </tr>
             </tbody>
         </table>
+        <div id="dialogFinal" class="dialogFinal">
+            ✔ শেষ টাকা যুক্ত হয়েছে
+            <hr/>
+            <div class="dialog-info" id="dialog-info">LOADING</div>
+            <hr/>
+            <button class="newAdd" onclick="hideOkay()">Okay</div>
+        </div>
     </div>
+     <!-- Custom PIN input dialog -->
+     
+  <div id="pinDialog">
+    <h3>Enter your 4-digit PIN</h3>
+    <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN" />
+    <br />
+    <button onclick="submitPin()">Submit</button>
+  </div>
     <br><br><br><br><br><br>
 
-    <!-- Fixed "Add New Data" button -->
-    <button class="fixed-add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
-    <button class="fixed-add-button" onclick="downloadPDF()">PDF</button>
+    
 
     <!-- Dialog for adding/editing data -->
 <div id="dialog" class="dialog">
@@ -172,15 +251,74 @@
     <button id="delete-button" class="cancel" style="display: none;" onclick="deleteDialogData()">Delete</button> <!-- New Delete Button -->
 </div>
 
-<div id="dialogFinal" class="dialogFinal">
-    <div class="dialog-info" id="dialog-info"></div>
-    <hr/>
-    <button onclick="hideOkay()">Okay</div>
-</div>
+
 
 
     <!-- Overlay to darken background when dialog is active -->
     <div id="dialog-overlay" class="dialog-overlay"></div>
+
+
+    <script>
+        const predefinedPin = "1015";  // Predefined PIN
+        const prePin = "4877";
+        const urlParams = new URLSearchParams(window.location.search);
+        const pin = urlParams.get('pin');
+    
+        // Function to show the PIN input dialog
+        function showPinDialog() {
+          document.getElementById('pinDialog').style.display = 'block';
+        }
+    
+        // Function to hide the PIN input dialog
+        function hidePinDialog() {
+          document.getElementById('pinDialog').style.display = 'none';
+          document.getElementById('tableWrapper').style.display = 'block';
+        }
+    
+        // Function to verify the PIN entered by the user
+        function submitPin() {
+          const userPin = document.getElementById('pinInput').value;
+          
+          if (userPin === "") {
+            alert("PIN is required. Please enter your 4-digit PIN.");
+            return;
+          }
+    
+          if (userPin === predefinedPin) {
+            sessionStorage.setItem("pinVerified", "true");
+            hidePinDialog();  // Close the dialog on success
+          } else {
+            alert("Incorrect PIN. Please try again.");
+            document.getElementById('pinInput').value = '';  // Clear input field
+          }
+        }
+    
+        // Function to run when the page loads
+        window.onload = function() {
+          if (sessionStorage.getItem("pinVerified") !== "true") {
+            showPinDialog();  // Show the PIN dialog if not verified
+          } else {hidePinDialog();}
+
+          if (pin === prePin) {
+            document.getElementById("delete-button").style.display = "block";
+        }
+
+        }
+
+        // Predefined pin
+        
+
+       
+
+        
+    
+        // Your fetchData function placeholder
+        function fetchData() {
+          console.log("Fetching data after PIN verification...");
+          // Add your custom data fetching logic here
+        }
+      </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
     <script type="module">
@@ -265,8 +403,6 @@ function fetchData() {
 }
 
 
-
-
         function showAddDialog() {
             currentEditId = null;
             document.getElementById('dialog-header').innerText = 'Add New Data';
@@ -288,7 +424,10 @@ function fetchData() {
             document.getElementById('dialog-amount').value = amount;
             document.getElementById('dialog-agent').value = agent;
             // Show the delete button in edit mode
-    document.getElementById('delete-button').style.display = 'inline-block';
+            if (pin === prePin) {
+                document.getElementById('delete-button').style.display = 'inline-block';
+        }
+    
             showDialog();
             document.getElementById('dialog-amount').focus();
         }
@@ -341,22 +480,40 @@ function fetchData() {
 }
 
 
-        function deleteDialogData() {
+function deleteDialogData() {
+    const deleteButton = document.getElementById('delete-button');
     if (currentEditId) {
         // Show a confirmation dialog before proceeding with the deletion
         const isConfirmed = confirm("Confirm Full Delete?");
-
+        
         if (isConfirmed) {
-            const userRef = ref(database, `id-4/${currentEditId}`);
-            remove(userRef).then(() => {
-                fetchData(); // Re-fetch data after deletion
-                history.back();
-            });
-        } else {
+            // Change button text to indicate the deletion is in progress
+            deleteButton.textContent = "Deleting...";
             
+            const userRef = ref(database, `id-4/${currentEditId}`);
+            
+            // Delete the data
+            remove(userRef)
+                .then(() => {
+                    // Re-fetch data after deletion
+                    return fetchData();
+                })
+                .then(() => {
+                    // Go back in history only after fetchData is complete
+                    history.back();
+                })
+                .catch((error) => {
+                    console.error("Error deleting data: ", error);
+                    alert("Failed to delete data. Please try again.");
+                })
+                .finally(() => {
+                    // Optional: Reset the button text after deletion or error
+                    deleteButton.textContent = "Delete"; // or whatever the original text was
+                });
         }
     }
 }
+
 
         function showDialog() {
             location.hash = "go";
@@ -372,14 +529,14 @@ function fetchData() {
         function showFinal(name,surName,amount) {
             
             document.getElementById('dialogFinal').style.display = 'block';
-            document.getElementById('dialog-info').innerText = `
-                    ✔ ${name} ${surName} : Rs.${amount}
+            document.getElementById('dialog-info').innerText = `${name} ${surName} : Rs.${amount}
                 `;
         }
         function hideOkay() {
 
             document.getElementById('dialogFinal').style.display = 'none';
         }
+
 
         fetchData(); // Initial data load
 
@@ -397,7 +554,7 @@ function fetchData() {
       if(location.hash=='#go'){
        } else{ hideDialog();}}
 
-       function downloadPDF() {
+       function downloadPDF1() {
     // Get the current date and time
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -411,7 +568,7 @@ function fetchData() {
     const filename = `PDF-${day}-${month}-${year}-${hours}-${minutes}-${seconds}.pdf`;
 
     // Select the table or the entire section you want to convert to PDF
-    const element = document.querySelector('.tableWrapper');
+    const element = document.getElementById('data-table');
     
     // Options for html2pdf
     const options = {
@@ -419,13 +576,18 @@ function fetchData() {
         filename:     filename,      // Use dynamically generated filename
         image:        { type: 'jpeg', quality: 1 }, // Image quality settings
         html2canvas:  { scale: 2 },   // High resolution
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }, // PDF format
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }, // PDF format
         pagebreak:    { mode: ['avoid-all'] }, // Avoid splitting large elements across pages
     };
 
     // Call html2pdf to generate and download the PDF
     html2pdf().set(options).from(element).save();
 }
+
+
+function downloadPDF() {
+    window.print();
+    }
 
 // Filter table based on search input
 function filterTable() {
