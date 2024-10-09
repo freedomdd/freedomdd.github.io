@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বৌ হয়েছে রঙের বিবি - (গ্রামবাসী ও অন্যান্য)</title>
+    <title>বৌ হয়েছে রঙের বিবি - (গ্রামবাসী)</title>
 
     <style>
         html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
@@ -42,7 +42,32 @@
         #table-body tr:last-child td:first-child { border-bottom-left-radius: 14px; }
         body {counter-set: s;}
         #table-body tr:nth-child(n+1) td:first-child:after {counter-increment: s; content: counter(s);}
-        .titletext {text-align: center;}
+        .titletext {
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        .category {
+            font-family: Tiro;
+            border: none;
+            background-color: white;
+            color: #000000;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            padding-top: 4px;
+            float: left;
+            height:40px;
+            margin-left: 2.5%;
+            margin-top: 8px;
+            border-radius: 5px;
+            width: 30%;
+        }
+        .now {
+            background-color: #bd5a09;
+            color: white;
+        }
         /* Dialog box style */
         .dialog {
             display: none;
@@ -186,11 +211,12 @@
 </head>
 <body>
 
-   
-    <hr/>
-    <div class="titletext">বৌ হয়েছে রঙের বিবি - (গ্রামবাসী ও অন্যান্য)</div>
-    <hr/>
-
+    <div class="titletext">
+        <button class="category" onclick="goto('members')">সদস্য</button>
+        <button class="category now" onclick="goto('colection')">গ্রামবাসী ✔</button>
+        <button class="category" onclick="goto('payment')">খরচ</button>
+    </div>
+    <br/><br/><br/>
     
 
     <div id="tableWrapper">
@@ -231,7 +257,7 @@
      
   <div id="pinDialog">
     <h3>Enter your 4-digit PIN</h3>
-    <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN" />
+    <input type="number" id="pinInput" maxlength="4" placeholder="Enter PIN" />
     <br />
     <button onclick="submitPin()">Submit</button>
   </div>
@@ -305,11 +331,9 @@
 
         }    
     
-        // Your fetchData function placeholder
-        function fetchData() {
-          console.log("Fetching data after PIN verification...");
-          // Add your custom data fetching logic here
-        }
+    function goto(link){
+        location.replace(link);
+    }
       </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
@@ -382,10 +406,10 @@ function fetchData() {
             // Find the last added row and show alert if it's new
             const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
             
-            if (latestEntryId !== localStorage.getItem("LASTID")) {
+            if (latestEntryId !== localStorage.getItem("LASTIDC")) {
                 const latestUser = data[latestEntryId];
                 showFinal(latestUser.name,latestUser.surName,latestUser.amount);
-                localStorage.setItem("LASTID",latestEntryId);  // Update the lastInsertedId
+                localStorage.setItem("LASTIDC",latestEntryId);  // Update the lastInsertedId
             }
 
 
@@ -417,7 +441,7 @@ function fetchData() {
             document.getElementById('dialog-amount').value = amount;
             document.getElementById('dialog-agent').value = agent;
             // Show the delete button in edit mode
-            if (pin === prePin) {
+            if (pin === adminPin) {
                 document.getElementById('delete-button').style.display = 'inline-block';
         }
     
