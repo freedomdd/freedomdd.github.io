@@ -424,7 +424,7 @@ function fetchData() {
 
         function showAddDialog() {
             currentEditId = null;
-            document.getElementById('dialog-header').innerText = 'Add New Data';
+            document.getElementById('dialog-header').innerText = 'নতুন চাঁদা (যাত্রা দলের সদস্য)';
             document.getElementById('dialog-name').value = '';
             document.getElementById('dialog-surName').value = '';
             document.getElementById('dialog-amount').value = '0';
@@ -437,7 +437,7 @@ function fetchData() {
 
         function showEditDialog(id, name, surName, amount, agent) {
             currentEditId = id;
-            document.getElementById('dialog-header').innerText = 'Edit Data';
+            document.getElementById('dialog-header').innerText = 'চাঁদা আপডেট (যাত্রা দলের সদস্য)';
             document.getElementById('dialog-name').value = name;
             document.getElementById('dialog-surName').value = surName;
             document.getElementById('dialog-amount').value = amount;
