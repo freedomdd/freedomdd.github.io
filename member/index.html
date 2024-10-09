@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বৌ হয়েছে রঙের বিবি - চাঁদা (MEMBERS)</title>
+    <title>বৌ হয়েছে রঙের বিবি - (সদস্য)</title>
 
     <style>
         html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
@@ -42,7 +42,32 @@
         #table-body tr:last-child td:first-child { border-bottom-left-radius: 14px; }
         body {counter-set: s;}
         #table-body tr:nth-child(n+1) td:first-child:after {counter-increment: s; content: counter(s);}
-        .titletext {text-align: center;}
+        .titletext {
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        .category {
+            font-family: Tiro;
+            border: none;
+            background-color: white;
+            color: #000000;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            padding-top: 4px;
+            float: left;
+            height:40px;
+            margin-left: 2.5%;
+            margin-top: 8px;
+            border-radius: 5px;
+            width: 30%;
+        }
+        .now {
+            background-color: #bd5a09;
+            color: white;
+        }
         /* Dialog box style */
         .dialog {
             display: none;
@@ -186,10 +211,12 @@
 </head>
 <body>
 
-   
-    <hr/>
-    <div class="titletext">বৌ হয়েছে রঙের বিবি - চাঁদা (MEMBERS)</div>
-    <hr/>
+    <div class="titletext">
+        <button class="category now" onclick="goto('members')">সদস্য ✔</button>
+        <button class="category" onclick="goto('collection')">গ্রামবাসী</button>
+        <button class="category" onclick="goto('payment')">খরচ</button>
+    </div>
+    <br/><br/><br/>
 
     
 
@@ -231,7 +258,7 @@
      
   <div id="pinDialog">
     <h3>Enter your 4-digit PIN</h3>
-    <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN" />
+    <input type="number" id="pinInput" maxlength="4" placeholder="Enter PIN" />
     <br />
     <button onclick="submitPin()">Submit</button>
   </div>
@@ -259,8 +286,8 @@
 
 
     <script>
-        const predefinedPin = "1510";  // Predefined PIN
-        const prePin = "4877";
+        const correctPin = "1510";  // Predefined PIN
+        const adminPin = "4877";
         const urlParams = new URLSearchParams(window.location.search);
         const pin = urlParams.get('pin');
     
@@ -280,43 +307,34 @@
           const userPin = document.getElementById('pinInput').value;
           
           if (userPin === "") {
-            alert("PIN is required. Please enter your 4-digit PIN.");
+            alert("পিন অবশ্যই দিতে হবে !");
             return;
           }
     
-          if (userPin === predefinedPin) {
-            sessionStorage.setItem("pinVerified", "true");
+          if (userPin === correctPin) {
+            localStorage.setItem("localPin", correctPin);
             hidePinDialog();  // Close the dialog on success
           } else {
-            alert("Incorrect PIN. Please try again.");
+            alert("আপনার পিন ভুল, আবার চেষ্টা করুন !");
             document.getElementById('pinInput').value = '';  // Clear input field
           }
         }
     
         // Function to run when the page loads
         window.onload = function() {
-          if (sessionStorage.getItem("pinVerified") !== "true") {
+          if (localStorage.getItem("localPin") !== "1510") {
             showPinDialog();  // Show the PIN dialog if not verified
           } else {hidePinDialog();}
 
-          if (pin === prePin) {
+          if (pin === adminPin) {
             document.getElementById("delete-button").style.display = "block";
         }
 
-        }
-
-        // Predefined pin
-        
-
-       
-
-        
+        }    
     
-        // Your fetchData function placeholder
-        function fetchData() {
-          console.log("Fetching data after PIN verification...");
-          // Add your custom data fetching logic here
-        }
+        function goto(link){
+        location.replace(link);
+    }
       </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
@@ -342,7 +360,7 @@
 
         // Fetch and display data from Firebase, sorted by surNamerow
 function fetchData() {
-    const dbRef = ref(database, 'id-4');
+    const dbRef = ref(database, 'members-1');
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         const tableBody = document.getElementById('table-body');
@@ -389,10 +407,10 @@ function fetchData() {
             // Find the last added row and show alert if it's new
             const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
             
-            if (latestEntryId !== localStorage.getItem("LASTID")) {
+            if (latestEntryId !== localStorage.getItem("LASTIDM")) {
                 const latestUser = data[latestEntryId];
                 showFinal(latestUser.name,latestUser.surName,latestUser.amount);
-                localStorage.setItem("LASTID",latestEntryId);  // Update the lastInsertedId
+                localStorage.setItem("LASTIDM",latestEntryId);  // Update the lastInsertedId
             }
 
 
@@ -408,7 +426,7 @@ function fetchData() {
             document.getElementById('dialog-header').innerText = 'Add New Data';
             document.getElementById('dialog-name').value = '';
             document.getElementById('dialog-surName').value = '';
-            document.getElementById('dialog-amount').value = '';
+            document.getElementById('dialog-amount').value = '0';
             document.getElementById('dialog-agent').value = 'Jatra Sangstha';
             // Hide the delete button in add mode
     document.getElementById('delete-button').style.display = 'none';
@@ -424,7 +442,7 @@ function fetchData() {
             document.getElementById('dialog-amount').value = amount;
             document.getElementById('dialog-agent').value = agent;
             // Show the delete button in edit mode
-            if (pin === prePin) {
+            if (pin === adminPin) {
                 document.getElementById('delete-button').style.display = 'inline-block';
         }
     
@@ -446,7 +464,7 @@ function fetchData() {
 
         if (currentEditId) {
             // Update existing data
-            const userRef = ref(database, `id-4/${currentEditId}`);
+            const userRef = ref(database, `members-1/${currentEditId}`);
             update(userRef, { name, surName, amount, agent }).then(() => {
                 return fetchData(); // Fetch data after updating
             }).then(() => {
@@ -460,7 +478,7 @@ function fetchData() {
             });
         } else {
             // Add new data
-            const dbRef = ref(database, 'id-4');
+            const dbRef = ref(database, 'members-1');
             const newUserRef = push(dbRef);
             set(newUserRef, { name, surName, amount, agent }).then(() => {
                 return fetchData(); // Fetch data after adding
@@ -490,7 +508,7 @@ function deleteDialogData() {
             // Change button text to indicate the deletion is in progress
             deleteButton.textContent = "Deleting...";
             
-            const userRef = ref(database, `id-4/${currentEditId}`);
+            const userRef = ref(database, `members-1/${currentEditId}`);
             
             // Delete the data
             remove(userRef)
@@ -605,3 +623,4 @@ function filterTable() {
     </script>
 </body>
 </html>
+
