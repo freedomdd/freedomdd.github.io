@@ -1,1 +1,627 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বৌ হয়েছে রঙের বিবি - (সদস্য)</title>
+
+    <style>
+        html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
+
+        #pinDialog {
+      display: none;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: calc(100% - 60px);
+      margin-left:10px;
+    }
+    #pinDialog input {
+      padding: 10px;
+      font-size: 18px;
+      margin-bottom: 10px;
+      width: calc(100% - 20px);
+    }
+    #pinDialog button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+
+        #tableWrapper { width: calc(100% - 10px); margin-left: 5px; display: none; text-align: center;}
+        .mainTable { width: 100%; background-color: white; border-collapse: separate; border-spacing: 0; border: 1px solid #d6d6d6; border-radius: 15px; font-size:13px;}
+        .mainTable td {color: #666666; border: 1px solid #d6d6d6; padding: 10px; text-align: center; }
+        .mainTable .firstTr td {background-color: #6c5880; color: #ffffff;}
+        .mainTable tr:first-child td:last-child {border-top-right-radius: 14px;}
+        .mainTable tr:first-child td:first-child {border-top-left-radius: 14px;}
+        #table-body tr td { border-radius: 0px; }
+        #table-body tr:last-child td:last-child { border-bottom-right-radius: 14px; }
+        #table-body tr:last-child td:first-child { border-bottom-left-radius: 14px; }
+        body {counter-set: s;}
+        #table-body tr:nth-child(n+1) td:first-child:after {counter-increment: s; content: counter(s);}
+        .titletext {
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        .category {
+            font-family: Tiro;
+            border: none;
+            background-color: white;
+            color: #000000;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            padding-top: 4px;
+            float: left;
+            height:40px;
+            margin-left: 2.5%;
+            margin-top: 8px;
+            border-radius: 5px;
+            width: 30%;
+        }
+        .now {
+            background-color: #bd5a09;
+            color: white;
+        }
+        /* Dialog box style */
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .dialogFinal {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: calc(10% - 20px);
+            background-color: #375169;
+            color: #eff7ff;
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            width: 80%;
+        }
+
+        .dialog-info {
+            line-height: 20px;
+        }
+        .dialogFinal hr {
+            border-color: #5a82a8;
+        }
+        .newAdd {
+            background-color: #5a82a8;
+            color: white;
+            border:none;
+            border-radius: 3px;
+            height: 40px;
+            width: 80px;
+        }
+
+        .dialog-header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .dialog input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #d6d6d6;
+        }
+
+        .dialog button {
+            padding: 8px 12px;
+            border: none;
+            background-color: #6c5880;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .dialog button.cancel {
+            background-color: #d9534f;
+        }
+        .dialog button#delete-button {
+            display: none;
+            float: right;
+            margin-right: 0px;
+        }
+        .editButton {
+            border: none;
+            background-color: #2a99da;
+            color: white;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            line-height: 10px;
+            border-radius: 5px;
+        }
+
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        fixedBottom {
+            
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        /* Fixed position for the Add New Data button */
+        .add-button {
+            margin-bottom: 5px;
+            padding: 10px 20px;
+            background-color: #6c5880;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-button:hover {
+            background-color: #59476b;
+        }
+
+        .search-container { text-align: center; margin-bottom: 10px; }
+        .search-input { padding: 8px; width: calc(100% - 30px); border-radius: 5px; border: 1px solid #d6d6d6; }
+        @font-face {font-display: swap;font-family: 'Tiro';src: url(https://fonts.gstatic.com/s/tirobangla/v6/IFSgHe1Tm95E3O8b5i2V8PGo80Luuw.woff2) format('woff2');}
+
+       
+        @media print {
+          
+            button, .search-container {
+                display: none; background-color: white;
+            }
+            html body {background-color: white;}
+            
+            td {line-height: 0px;}
+
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="titletext">
+        <button class="category now" onclick="goto('members')">সদস্য ✔</button>
+        <button class="category" onclick="goto('collection')">গ্রামবাসী</button>
+        <button class="category" onclick="goto('payment')">খরচ</button>
+    </div>
+    <br/><br/><br/>
+
+    
+
+    <div id="tableWrapper">
+        <!-- Fixed "Add New Data" button -->
+         <fixedBottom>
+    <button class="add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
+    <button class="add-button" onclick="downloadPDF()">PRINT</button>
+</fixedBottom>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
+        </div>
+        <table id="data-table" class="mainTable list">
+            <tr class="firstTr">
+                <td>#</td>
+                <td>নাম</td>
+                
+                <td>টাকা</td>
+                <td>+</td>
+            </tr>
+            <tbody id="table-body">
+                <tr>
+                    <td></td>
+                    <td>LOADING</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="dialogFinal" class="dialogFinal">
+            ✔ শেষ টাকা যুক্ত হয়েছে
+            <hr/>
+            <div class="dialog-info" id="dialog-info">LOADING</div>
+            <hr/>
+            <button class="newAdd" onclick="hideOkay()">Okay</div>
+        </div>
+    </div>
+     <!-- Custom PIN input dialog -->
+     
+  <div id="pinDialog">
+    <h3>Enter your 4-digit PIN</h3>
+    <input type="number" id="pinInput" maxlength="4" placeholder="Enter PIN" />
+    <br />
+    <button onclick="submitPin()">Submit</button>
+  </div>
+    <br><br><br><br><br><br>
+
+    
+
+    <!-- Dialog for adding/editing data -->
+<div id="dialog" class="dialog">
+    <div class="dialog-header" id="dialog-header">Add/Edit Data</div>
+    <input type="text" id="dialog-name" placeholder="নাম">
+    <input type="text" id="dialog-surName" placeholder="পদবি (English)">
+    <input type="number" id="dialog-amount" placeholder="Amount">
+    <input type="text" id="dialog-agent" placeholder="Collector" value="Jatra Sangstha">
+    <button id="save-button" onclick="saveDialogData()">Save</button>
+    <button class="cancel" onclick="history.back()">Cancel</button>
+    <button id="delete-button" class="cancel" style="display: none;" onclick="deleteDialogData()">Delete</button> <!-- New Delete Button -->
+</div>
+
+
+
+
+    <!-- Overlay to darken background when dialog is active -->
+    <div id="dialog-overlay" class="dialog-overlay"></div>
+
+
+    <script>
+        const correctPin = "1510";  // Predefined PIN
+        const adminPin = "4877";
+        const urlParams = new URLSearchParams(window.location.search);
+        const pin = urlParams.get('pin');
+    
+        // Function to show the PIN input dialog
+        function showPinDialog() {
+          document.getElementById('pinDialog').style.display = 'block';
+        }
+    
+        // Function to hide the PIN input dialog
+        function hidePinDialog() {
+          document.getElementById('pinDialog').style.display = 'none';
+          document.getElementById('tableWrapper').style.display = 'block';
+        }
+    
+        // Function to verify the PIN entered by the user
+        function submitPin() {
+          const userPin = document.getElementById('pinInput').value;
+          
+          if (userPin === "") {
+            alert("পিন অবশ্যই দিতে হবে !");
+            return;
+          }
+    
+          if (userPin === correctPin) {
+            localStorage.setItem("localPin", correctPin);
+            hidePinDialog();  // Close the dialog on success
+          } else {
+            alert("আপনার পিন ভুল, আবার চেষ্টা করুন !");
+            document.getElementById('pinInput').value = '';  // Clear input field
+          }
+        }
+    
+        // Function to run when the page loads
+        window.onload = function() {
+          if (localStorage.getItem("localPin") !== "1510") {
+            showPinDialog();  // Show the PIN dialog if not verified
+          } else {hidePinDialog();}
+
+          if (pin === adminPin) {
+            document.getElementById("delete-button").style.display = "block";
+        }
+
+        }    
+    
+        function goto(link){
+        location.replace(link);
+    }
+      </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD31LB_AqMNXPTButeHh6BJKY0NVJ3LKWQ",
+            authDomain: "mbixreal.firebaseapp.com",
+            projectId: "mbixreal",
+            storageBucket: "mbixreal.appspot.com",
+            messagingSenderId: "862474308645",
+            appId: "1:862474308645:web:8158f72ee204be4c2d43cc",
+            databaseURL: "https://mbixreal-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let currentEditId = null;  // To track if editing or adding
+
+        // Fetch and display data from Firebase, sorted by surNamerow
+function fetchData() {
+    const dbRef = ref(database, 'members-1');
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+
+        let totalAmount = 0; // Initialize total amount
+
+        if (data) {
+            // Convert data to array and sort by surName first, and then by name if surNames are the same
+            const sortedData = Object.entries(data).sort(([, a], [, b]) => {
+                const surNameComparison = a.surName.localeCompare(b.surName);
+                if (surNameComparison === 0) {
+                    // If surNames are the same, sort by name
+                    return a.name.localeCompare(b.name);
+                }
+                return surNameComparison;
+            });
+
+            sortedData.forEach(([id, user]) => {
+                totalAmount += parseFloat(user.amount); // Add each amount to the total
+
+                tableBody.innerHTML += `
+                    <tr id="row-${id}" class="data-row">
+                        <td></td>
+                        <td>${user.name} ${user.surName}</td>
+                        <td>${user.amount}</td>
+                        <td>
+                            <button class="editButton" onclick="showEditDialog('${id}', '${user.name}', '${user.surName}', ${user.amount}, '${user.agent}')">✎</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Add a row at the end to display the total amount
+            tableBody.innerHTML += `
+                <tr>
+                    <td style="color: transparent"></td>
+                    <td style="font-weight: bold;">Total</td>
+                    <td style="font-weight: bold;">${totalAmount.toFixed(2)}</td>
+                    <td></td>
+                </tr>
+            `;
+
+            // Find the last added row and show alert if it's new
+            const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
+            
+            if (latestEntryId !== localStorage.getItem("LASTIDM")) {
+                const latestUser = data[latestEntryId];
+                showFinal(latestUser.name,latestUser.surName,latestUser.amount);
+                localStorage.setItem("LASTIDM",latestEntryId);  // Update the lastInsertedId
+            }
+
+
+        } else {
+            tableBody.innerHTML = '<tr><td></td><td colspan="3">No data available</td></tr>';
+        }
+    });
+}
+
+
+        function showAddDialog() {
+            currentEditId = null;
+            document.getElementById('dialog-header').innerText = 'Add New Data';
+            document.getElementById('dialog-name').value = '';
+            document.getElementById('dialog-surName').value = '';
+            document.getElementById('dialog-amount').value = '0';
+            document.getElementById('dialog-agent').value = 'Jatra Sangstha';
+            // Hide the delete button in add mode
+    document.getElementById('delete-button').style.display = 'none';
+            showDialog();
+            document.getElementById('dialog-name').focus();
+        }
+
+        function showEditDialog(id, name, surName, amount, agent) {
+            currentEditId = id;
+            document.getElementById('dialog-header').innerText = 'Edit Data';
+            document.getElementById('dialog-name').value = name;
+            document.getElementById('dialog-surName').value = surName;
+            document.getElementById('dialog-amount').value = amount;
+            document.getElementById('dialog-agent').value = agent;
+            // Show the delete button in edit mode
+            if (pin === adminPin) {
+                document.getElementById('delete-button').style.display = 'inline-block';
+        }
+    
+            showDialog();
+            document.getElementById('dialog-amount').focus();
+        }
+
+        function saveDialogData() {
+    const name = document.getElementById('dialog-name').value.toUpperCase();
+    const surName = document.getElementById('dialog-surName').value.toUpperCase();
+    const amount = document.getElementById('dialog-amount').value;
+    const agent = document.getElementById('dialog-agent').value.toUpperCase();
+    const saveButton = document.getElementById('save-button');
+
+    if (name && surName && amount && agent) {
+        // Disable the save button and change its text to "Saving..."
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+
+        if (currentEditId) {
+            // Update existing data
+            const userRef = ref(database, `members-1/${currentEditId}`);
+            update(userRef, { name, surName, amount, agent }).then(() => {
+                return fetchData(); // Fetch data after updating
+            }).then(() => {
+                history.back(); // Hide dialog after fetching
+            }).catch((error) => {
+                alert('Error updating data: ' + error.message);
+            }).finally(() => {
+                // Re-enable the button and reset its text
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save';
+            });
+        } else {
+            // Add new data
+            const dbRef = ref(database, 'members-1');
+            const newUserRef = push(dbRef);
+            set(newUserRef, { name, surName, amount, agent }).then(() => {
+                return fetchData(); // Fetch data after adding
+            }).then(() => {
+                history.back(); // Hide dialog after fetching
+            }).catch((error) => {
+                alert('Error adding data: ' + error.message);
+            }).finally(() => {
+                // Re-enable the button and reset its text
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save';
+            });
+        }
+    } else {
+        alert('Please fill out all fields');
+    }
+}
+
+
+function deleteDialogData() {
+    const deleteButton = document.getElementById('delete-button');
+    if (currentEditId) {
+        // Show a confirmation dialog before proceeding with the deletion
+        const isConfirmed = confirm("Confirm Full Delete?");
+        
+        if (isConfirmed) {
+            // Change button text to indicate the deletion is in progress
+            deleteButton.textContent = "Deleting...";
+            
+            const userRef = ref(database, `members-1/${currentEditId}`);
+            
+            // Delete the data
+            remove(userRef)
+                .then(() => {
+                    // Re-fetch data after deletion
+                    return fetchData();
+                })
+                .then(() => {
+                    // Go back in history only after fetchData is complete
+                    history.back();
+                })
+                .catch((error) => {
+                    console.error("Error deleting data: ", error);
+                    alert("Failed to delete data. Please try again.");
+                })
+                .finally(() => {
+                    // Optional: Reset the button text after deletion or error
+                    deleteButton.textContent = "Delete"; // or whatever the original text was
+                });
+        }
+    }
+}
+
+
+        function showDialog() {
+            location.hash = "go";
+            document.getElementById('dialog').style.display = 'block';
+            document.getElementById('dialog-overlay').style.display = 'block';
+        }
+
+        function hideDialog() {
+            document.getElementById('dialog').style.display = 'none';
+            document.getElementById('dialog-overlay').style.display = 'none';
+        }
+
+        function showFinal(name,surName,amount) {
+            
+            document.getElementById('dialogFinal').style.display = 'block';
+            document.getElementById('dialog-info').innerText = `${name} ${surName} : Rs.${amount}
+                `;
+        }
+        function hideOkay() {
+
+            document.getElementById('dialogFinal').style.display = 'none';
+        }
+
+
+        fetchData(); // Initial data load
+
+        window.showAddDialog = showAddDialog;
+        window.saveDialogData = saveDialogData;
+        window.showEditDialog = showEditDialog;
+        window.hideDialog = hideDialog;
+        window.deleteDialogData = deleteDialogData;
+        window.downloadPDF = downloadPDF;
+        window.filterTable = filterTable;
+        window.hideOkay = hideOkay;
+
+
+        onhashchange = function (){ 
+      if(location.hash=='#go'){
+       } else{ hideDialog();}}
+
+       function downloadPDF1() {
+    // Get the current date and time
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    // Format the filename as PDF-DD-MM-YYYY-HH-MM-SS.pdf
+    const filename = `PDF-${day}-${month}-${year}-${hours}-${minutes}-${seconds}.pdf`;
+
+    // Select the table or the entire section you want to convert to PDF
+    const element = document.getElementById('data-table');
+    
+    // Options for html2pdf
+    const options = {
+        margin:       0.5,           // Margin in inches
+        filename:     filename,      // Use dynamically generated filename
+        image:        { type: 'jpeg', quality: 1 }, // Image quality settings
+        html2canvas:  { scale: 2 },   // High resolution
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }, // PDF format
+        pagebreak:    { mode: ['avoid-all'] }, // Avoid splitting large elements across pages
+    };
+
+    // Call html2pdf to generate and download the PDF
+    html2pdf().set(options).from(element).save();
+}
+
+
+function downloadPDF() {
+    window.print();
+    }
+
+// Filter table based on search input
+function filterTable() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#table-body .data-row');
+
+            rows.forEach(row => {
+                const nameCell = row.cells[1].innerText.toLowerCase();
+                row.style.display = nameCell.includes(input) ? '' : 'none';
+            });
+        }
+
+
+
+    </script>
+</body>
+</html>
+
