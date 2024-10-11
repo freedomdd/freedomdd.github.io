@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বৌ হয়েছে রঙের বিবি - (গ্রামবাসী)</title>
+    <title>বৌ হয়েছে রঙের বিবি - (সদস্য)</title>
 
     <style>
         html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
@@ -212,11 +212,12 @@
 <body>
 
     <div class="titletext">
-        <button class="category" onclick="goto('members')">সদস্য</button>
-        <button class="category now" onclick="goto('colection')">গ্রামবাসী ✔</button>
+        <button class="category now" onclick="goto('members')">সদস্য ✔</button>
+        <button class="category" onclick="goto('collection')">গ্রামবাসী</button>
         <button class="category" onclick="goto('payment')">খরচ</button>
     </div>
     <br/><br/><br/>
+
     
 
     <div id="tableWrapper">
@@ -331,7 +332,7 @@
 
         }    
     
-    function goto(link){
+        function goto(link){
         location.replace(link);
     }
       </script>
@@ -359,7 +360,7 @@
 
         // Fetch and display data from Firebase, sorted by surNamerow
 function fetchData() {
-    const dbRef = ref(database, 'collection-1');
+    const dbRef = ref(database, 'members-1');
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         const tableBody = document.getElementById('table-body');
@@ -406,10 +407,10 @@ function fetchData() {
             // Find the last added row and show alert if it's new
             const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
             
-            if (latestEntryId !== localStorage.getItem("LASTIDC")) {
+            if (latestEntryId !== localStorage.getItem("LASTIDM")) {
                 const latestUser = data[latestEntryId];
                 showFinal(latestUser.name,latestUser.surName,latestUser.amount);
-                localStorage.setItem("LASTIDC",latestEntryId);  // Update the lastInsertedId
+                localStorage.setItem("LASTIDM",latestEntryId);  // Update the lastInsertedId
             }
 
 
@@ -422,10 +423,10 @@ function fetchData() {
 
         function showAddDialog() {
             currentEditId = null;
-            document.getElementById('dialog-header').innerText = 'নতুন চাঁদা (গ্রামবাসী)';
+            document.getElementById('dialog-header').innerText = 'নতুন চাঁদা (যাত্রা দলের সদস্য)';
             document.getElementById('dialog-name').value = '';
             document.getElementById('dialog-surName').value = '';
-            document.getElementById('dialog-amount').value = '';
+            document.getElementById('dialog-amount').value = '0';
             document.getElementById('dialog-agent').value = 'Jatra Sangstha';
             // Hide the delete button in add mode
     document.getElementById('delete-button').style.display = 'none';
@@ -435,7 +436,7 @@ function fetchData() {
 
         function showEditDialog(id, name, surName, amount, agent) {
             currentEditId = id;
-            document.getElementById('dialog-header').innerText = 'চাঁদা আপডেট (গ্রামবাসী)';
+            document.getElementById('dialog-header').innerText = 'চাঁদা আপডেট (যাত্রা দলের সদস্য)';
             document.getElementById('dialog-name').value = name;
             document.getElementById('dialog-surName').value = surName;
             document.getElementById('dialog-amount').value = amount;
@@ -463,7 +464,7 @@ function fetchData() {
 
         if (currentEditId) {
             // Update existing data
-            const userRef = ref(database, `collection-1/${currentEditId}`);
+            const userRef = ref(database, `members-1/${currentEditId}`);
             update(userRef, { name, surName, amount, agent }).then(() => {
                 return fetchData(); // Fetch data after updating
             }).then(() => {
@@ -477,7 +478,7 @@ function fetchData() {
             });
         } else {
             // Add new data
-            const dbRef = ref(database, 'collection-1');
+            const dbRef = ref(database, 'members-1');
             const newUserRef = push(dbRef);
             set(newUserRef, { name, surName, amount, agent }).then(() => {
                 return fetchData(); // Fetch data after adding
@@ -507,7 +508,7 @@ function deleteDialogData() {
             // Change button text to indicate the deletion is in progress
             deleteButton.textContent = "Deleting...";
             
-            const userRef = ref(database, `collection-1/${currentEditId}`);
+            const userRef = ref(database, `members-1/${currentEditId}`);
             
             // Delete the data
             remove(userRef)
@@ -622,4 +623,3 @@ function filterTable() {
     </script>
 </body>
 </html>
-
