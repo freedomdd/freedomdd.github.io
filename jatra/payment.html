@@ -9,7 +9,6 @@
         html body {max-width:800px; margin:0px auto;background-color:#E7E7E7; user-select: none; font-family:Tiro;}
 
         #pinDialog {
-      display: none;
       background-color: white;
       padding: 20px;
       border-radius: 10px;
@@ -89,13 +88,13 @@
             position: fixed;
             top: 10px;
             left: calc(10% - 20px);
-            background-color: #375169;
-            color: #eff7ff;
-            border: none;
+            background-color: #ffffff;
+            color: #000000;
+            border: 3px solid black;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
             width: 80%;
         }
 
@@ -217,7 +216,6 @@
         <button class="category now" onclick="goto('payment')">খরচ ✔</button>
     </div>
     <br/><br/><br/>
-
     
 
     <div id="tableWrapper">
@@ -247,11 +245,11 @@
             </tbody>
         </table>
         <div id="dialogFinal" class="dialogFinal">
-            ✔ শেষ খরচ হয়েছে
+            ☀ শেষ আপডেট হল
             <hr/>
             <div class="dialog-info" id="dialog-info">LOADING</div>
             <hr/>
-            <button class="newAdd" onclick="hideOkay()">Okay</div>
+            <button class="newAdd" onclick="hideOkay()">CLOSE</div>
         </div>
     </div>
      <!-- Custom PIN input dialog -->
@@ -269,8 +267,8 @@
     <!-- Dialog for adding/editing data -->
 <div id="dialog" class="dialog">
     <div class="dialog-header" id="dialog-header">Add/Edit Data</div>
-    <input type="text" id="dialog-name" placeholder="খরচের কারন">
-    <input type="text" id="dialog-surName" placeholder="অন্যান্য কারন">
+    <input type="text" id="dialog-name" placeholder="খাত">
+    <input type="text" id="dialog-surName" placeholder="তথ্য">
     <input type="number" id="dialog-amount" placeholder="Amount">
     <input type="text" id="dialog-agent" placeholder="Collector" value="Jatra Sangstha">
     <button id="save-button" onclick="saveDialogData()">Save</button>
@@ -311,8 +309,8 @@
             return;
           }
     
-          if (userPin === correctPin) {
-            localStorage.setItem("localPin", correctPin);
+          if (userPin === correctPin || userPin === adminPin) {
+            localStorage.setItem("localPin", userPin);
             hidePinDialog();  // Close the dialog on success
           } else {
             alert("আপনার পিন ভুল, আবার চেষ্টা করুন !");
@@ -321,18 +319,17 @@
         }
     
         // Function to run when the page loads
-        window.onload = function() {
-          if (localStorage.getItem("localPin") !== "1510") {
-            showPinDialog();  // Show the PIN dialog if not verified
-          } else {hidePinDialog();}
-
-          if (pin === adminPin) {
-            document.getElementById("delete-button").style.display = "block";
-        }
-
-        }    
     
-        function goto(link){
+          if (localStorage.getItem("localPin") === "1510") {
+            hidePinDialog();
+          } 
+
+          if (localStorage.getItem("localPin") === "4877") {
+            document.getElementById("delete-button").style.display = "block";
+            hidePinDialog();
+        }
+    
+    function goto(link){
         location.replace(link);
     }
       </script>
@@ -361,6 +358,7 @@
         // Fetch and display data from Firebase, sorted by surNamerow
 function fetchData() {
     const dbRef = ref(database, 'payment-1');
+    const lastDataRef = ref(database, 'payment-1-lastData');
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         const tableBody = document.getElementById('table-body');
@@ -404,29 +402,31 @@ function fetchData() {
                 </tr>
             `;
 
-            // Find the last added row and show alert if it's new
-            const latestEntryId = Object.keys(data).pop();  // Get the latest added entry's key (ID)
-            
-            if (latestEntryId !== localStorage.getItem("LASTIDP")) {
-                const latestUser = data[latestEntryId];
-                showFinal(latestUser.name,latestUser.surName,latestUser.amount);
-                localStorage.setItem("LASTIDP",latestEntryId);  // Update the lastInsertedId
-            }
+          
 
 
         } else {
             tableBody.innerHTML = '<tr><td></td><td colspan="3">No data available</td></tr>';
         }
     });
+  
+    onValue(lastDataRef, (snapshot) => {
+        const lastData = snapshot.val();
+        if (lastData) {
+            // Show the alert with the last inserted/updated data
+            showFinal(lastData.name, lastData.surName, lastData.amount);
+        }
+    });
+
 }
 
 
         function showAddDialog() {
             currentEditId = null;
-            document.getElementById('dialog-header').innerText = 'Add New Data';
+            document.getElementById('dialog-header').innerText = 'নতুন খরচ';
             document.getElementById('dialog-name').value = '';
             document.getElementById('dialog-surName').value = '-';
-            document.getElementById('dialog-amount').value = '0';
+            document.getElementById('dialog-amount').value = '';
             document.getElementById('dialog-agent').value = 'Jatra Sangstha';
             // Hide the delete button in add mode
     document.getElementById('delete-button').style.display = 'none';
@@ -436,7 +436,7 @@ function fetchData() {
 
         function showEditDialog(id, name, surName, amount, agent) {
             currentEditId = id;
-            document.getElementById('dialog-header').innerText = 'Edit Data';
+            document.getElementById('dialog-header').innerText = 'খরচ আপডেট';
             document.getElementById('dialog-name').value = name;
             document.getElementById('dialog-surName').value = surName;
             document.getElementById('dialog-amount').value = amount;
@@ -461,11 +461,15 @@ function fetchData() {
         // Disable the save button and change its text to "Saving..."
         saveButton.disabled = true;
         saveButton.textContent = 'Saving...';
+        const lastData = { name, surName, amount, agent };
 
         if (currentEditId) {
             // Update existing data
             const userRef = ref(database, `payment-1/${currentEditId}`);
-            update(userRef, { name, surName, amount, agent }).then(() => {
+            update(userRef, lastData).then(() => {
+                // Save the last edited data in payment-1-lastData
+                const lastDataRef = ref(database, 'payment-1-lastData');
+                return set(lastDataRef, lastData);
                 return fetchData(); // Fetch data after updating
             }).then(() => {
                 history.back(); // Hide dialog after fetching
@@ -480,7 +484,10 @@ function fetchData() {
             // Add new data
             const dbRef = ref(database, 'payment-1');
             const newUserRef = push(dbRef);
-            set(newUserRef, { name, surName, amount, agent }).then(() => {
+            set(newUserRef, lastData).then(() => {
+                // Save the last edited data in payment-1-lastData
+                const lastDataRef = ref(database, 'payment-1-lastData');
+                return set(lastDataRef, lastData);
                 return fetchData(); // Fetch data after adding
             }).then(() => {
                 history.back(); // Hide dialog after fetching
@@ -500,6 +507,10 @@ function fetchData() {
 
 function deleteDialogData() {
     const deleteButton = document.getElementById('delete-button');
+    const name = document.getElementById('dialog-name').value.toUpperCase();
+    const surName = document.getElementById('dialog-surName').value.toUpperCase();
+    const agent = document.getElementById('dialog-agent').value.toUpperCase();
+    const amount = document.getElementById('dialog-amount').value+" (Deleted)";
     if (currentEditId) {
         // Show a confirmation dialog before proceeding with the deletion
         const isConfirmed = confirm("Confirm Full Delete?");
@@ -507,13 +518,16 @@ function deleteDialogData() {
         if (isConfirmed) {
             // Change button text to indicate the deletion is in progress
             deleteButton.textContent = "Deleting...";
+            const lastData = { name, surName, amount, agent };
             
             const userRef = ref(database, `payment-1/${currentEditId}`);
             
             // Delete the data
             remove(userRef)
                 .then(() => {
-                    // Re-fetch data after deletion
+                    // Save the last edited data in payment-1-lastData
+                const lastDataRef = ref(database, 'payment-1-lastData');
+                return set(lastDataRef, lastData);
                     return fetchData();
                 })
                 .then(() => {
@@ -623,4 +637,3 @@ function filterTable() {
     </script>
 </body>
 </html>
-
