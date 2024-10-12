@@ -314,12 +314,11 @@
     <script>
         const correctPin = "1510";  // Predefined PIN
         const adminPin = "4877";
-        const urlParams = new URLSearchParams(window.location.search);
-        const pin = urlParams.get('pin');
     
         // Function to show the PIN input dialog
         function showPinDialog() {
           document.getElementById('pinDialog').style.display = 'block';
+document.getElementById('pinInput').focus();
         }
     
         // Function to hide the PIN input dialog
