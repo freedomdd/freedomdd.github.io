@@ -347,14 +347,9 @@ document.getElementById('pinInput').focus();
     
         // Function to run when the page loads
     
-          if (localStorage.getItem("localPin") === "1510") {
+          if (localStorage.getItem("localPin")) {
             hidePinDialog();
-          } 
-
-          if (localStorage.getItem("localPin") === "4877") {
-            document.getElementById("delete-button").style.display = "block";
-            hidePinDialog();
-        }
+          } else {document.getElementById('pinInput').focus();}
     
     function goto(link){
         location.replace(link);
