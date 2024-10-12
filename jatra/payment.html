@@ -10,23 +10,30 @@
 
         #pinDialog {
       background-color: white;
-      padding: 20px;
+      padding-top: 10px;
+      padding-bottom: 15px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       text-align: center;
-      width: calc(100% - 60px);
-      margin-left:10px;
+      width: 70%;
+      margin-left:15%;
+      margin-top: 30%;
     }
     #pinDialog input {
       padding: 10px;
       font-size: 18px;
       margin-bottom: 10px;
-      width: calc(100% - 20px);
+      width: 70%;
+      border: 2px solid #c76965;
+      border-radius: 5px;
     }
     #pinDialog button {
       padding: 10px 20px;
       font-size: 16px;
-      border-radius: 10px;
+      border-radius: 5px;
+      background-color: #c76965;
+      color: white;
+      border: none;
     }
 
 
@@ -64,7 +71,7 @@
             width: 30%;
         }
         .now {
-            background-color: #bd5a09;
+            background-color: #c76965;
             color: white;
         }
         /* Dialog box style */
@@ -87,27 +94,46 @@
             display: none;
             position: fixed;
             top: 10px;
-            left: calc(10% - 20px);
+            left: calc(10% - 3px);
             background-color: #ffffff;
             color: #000000;
-            border: 3px solid black;
+            border: 3px solid #c76965;
             border-radius: 10px;
-            padding: 20px;
             box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.5);
             z-index: 1001;
             width: 80%;
         }
 
         .dialog-info {
-            line-height: 20px;
+            padding-top: 15px;
+            padding-bottom: 12px;
+            background-color: #c76965;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
         }
-        .dialogFinal hr {
-            border-color: #5a82a8;
+        .dialog-total {
+            padding-top: 8px;
+            padding-bottom: 5px;
+            background-color: #a1514e;
+            color: #ffffff;
+            font-size: 13px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            width: 70%;
+            margin-left: 15%;
+        }
+        .finalHead {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            color: #2e7e2e;
         }
         .newAdd {
             background-color: #5a82a8;
             color: white;
             border:none;
+            margin-top: 10px;
+            margin-bottom: 10px;
             border-radius: 3px;
             height: 40px;
             width: 80px;
@@ -221,8 +247,9 @@
     <div id="tableWrapper">
         <!-- Fixed "Add New Data" button -->
          <fixedBottom>
-    <button class="add-button right" onclick="showAddDialog()">+NEW ENTRY</button>
+    <button class="add-button right" onclick="showAddDialog();hideOkay()">+NEW ENTRY</button>
     <button class="add-button" onclick="downloadPDF()">PRINT</button>
+    <button class="add-button" onclick="logOut()">LOG OUT</button>
 </fixedBottom>
         <div class="search-container">
             <input type="text" id="search-input" class="search-input" placeholder="Search by Name..." oninput="filterTable()">
@@ -245,20 +272,21 @@
             </tbody>
         </table>
         <div id="dialogFinal" class="dialogFinal">
-            ☀ খরচের শেষ আপডেট হল
-            <hr/>
+            <div class="finalHead">✅ খরচের শেষ আপডেট হল</div>
+            
             <div class="dialog-info" id="dialog-info">LOADING</div>
-            <hr/>
-            <button class="newAdd" onclick="hideOkay()">CLOSE</div>
+            <div class="dialog-total" id="dialog-total">TOTAL</div>
+            
+            <button class="newAdd" onclick="hideOkay()">OKAY</div>
         </div>
     </div>
      <!-- Custom PIN input dialog -->
      
   <div id="pinDialog">
-    <h3>Enter your 4-digit PIN</h3>
+    <h3>FOUR DIGIT PIN</h3>
     <input type="number" id="pinInput" maxlength="4" placeholder="Enter PIN" />
     <br />
-    <button onclick="submitPin()">Submit</button>
+    <button class="pinSubmit" onclick="submitPin()">Submit</button>
   </div>
     <br><br><br><br><br><br>
 
@@ -267,8 +295,8 @@
     <!-- Dialog for adding/editing data -->
 <div id="dialog" class="dialog">
     <div class="dialog-header" id="dialog-header">Add/Edit Data</div>
-    <input type="text" id="dialog-name" placeholder="খাত">
-    <input type="text" id="dialog-surName" placeholder="তথ্য">
+    <input type="text" id="dialog-name" placeholder="নাম">
+    <input type="text" id="dialog-surName" placeholder="পদবি (English)">
     <input type="number" id="dialog-amount" placeholder="Amount">
     <input type="text" id="dialog-agent" placeholder="Collector" value="Jatra Sangstha">
     <button id="save-button" onclick="saveDialogData()">Save</button>
@@ -312,6 +340,7 @@
           if (userPin === correctPin || userPin === adminPin) {
             localStorage.setItem("localPin", userPin);
             hidePinDialog();  // Close the dialog on success
+            
           } else {
             alert("আপনার পিন ভুল, আবার চেষ্টা করুন !");
             document.getElementById('pinInput').value = '';  // Clear input field
@@ -325,7 +354,7 @@
           } 
 
           if (localStorage.getItem("localPin") === "4877") {
-            document.getElementById("delete-button").style.display = "block";
+            document.getElementById('delete-button').style.display = 'inline-block';
             hidePinDialog();
         }
     
@@ -354,6 +383,7 @@
         const database = getDatabase(app);
 
         let currentEditId = null;  // To track if editing or adding
+        let totalAmount = 0; // Initialize total amount
 
         // Fetch and display data from Firebase, sorted by surNamerow
 function fetchData() {
@@ -364,7 +394,7 @@ function fetchData() {
         const tableBody = document.getElementById('table-body');
         tableBody.innerHTML = '';
 
-        let totalAmount = 0; // Initialize total amount
+        totalAmount = 0; // Initialize total amount
 
         if (data) {
             // Convert data to array and sort by surName first, and then by name if surNames are the same
@@ -442,7 +472,7 @@ function fetchData() {
             document.getElementById('dialog-amount').value = amount;
             document.getElementById('dialog-agent').value = agent;
             // Show the delete button in edit mode
-            if (pin === adminPin) {
+            if (localStorage.getItem("localPin") === "4877") {
                 document.getElementById('delete-button').style.display = 'inline-block';
         }
     
@@ -561,12 +591,15 @@ function deleteDialogData() {
         function showFinal(name,surName,amount) {
             
             document.getElementById('dialogFinal').style.display = 'block';
-            document.getElementById('dialog-info').innerText = `${name} ${surName} : Rs.${amount}
-                `;
+            document.getElementById('dialog-info').innerText = `${name} ${surName} : Rs.${amount}`;
+            document.getElementById('dialog-total').innerText = `মোট খরচ : Rs.${totalAmount}`;
         }
         function hideOkay() {
 
             document.getElementById('dialogFinal').style.display = 'none';
+        }
+        function logOut(){
+            localStorage.clear(); location.replace("");
         }
 
 
@@ -580,6 +613,7 @@ function deleteDialogData() {
         window.downloadPDF = downloadPDF;
         window.filterTable = filterTable;
         window.hideOkay = hideOkay;
+        window.logOut = logOut;
 
 
         onhashchange = function (){ 
