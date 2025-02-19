@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download List</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Download List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Download</th>
+                <th>Copy</th>
+            </tr>
+        </thead>
+        <tbody id="movieTable"></tbody>
+    </table><script>
+    const movies = [
+        { "name": "Movie 1", "link": "https://example.com/movie1" },
+        { "name": "Movie 2", "link": "https://example.com/movie2" }
+    ];
+    
+    function renderTable() {
+        const table = document.getElementById("movieTable");
+        table.innerHTML = "";
+        movies.forEach(movie => {
+            let row = `<tr>
+                <td>${movie.name}</td>
+                <td><a href="${movie.link}" target="_blank">Download</a></td>
+                <td><button onclick="copyLink('${movie.link}')">Copy</button></td>
+            </tr>`;
+            table.innerHTML += row;
+        });
+    }
+    
+    function copyLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert("Link copied to clipboard!");
+        });
+    }
+    
+    renderTable();
+</script>
+
+</body>
+</html>
