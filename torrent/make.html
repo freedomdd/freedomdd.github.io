@@ -23,13 +23,14 @@
             <tr>
                 <th>Movie Name</th>
                 <th>Download Link</th>
+                <th>Copy Link</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody id="movieTable"></tbody>
     </table><script>
     let movies = JSON.parse(localStorage.getItem("movies")) || [];
-    
+
     function renderTable() {
         const table = document.getElementById("movieTable");
         table.innerHTML = "";
@@ -37,12 +38,13 @@
             let row = `<tr>
                 <td>${movie.name}</td>
                 <td><a href="${movie.link}" target="_blank">Download</a></td>
+                <td><button onclick="copyLink('${movie.link}')">Copy</button></td>
                 <td><button onclick="deleteMovie(${index})">Delete</button></td>
             </tr>`;
             table.innerHTML += row;
         });
     }
-    
+
     function addMovie() {
         const name = document.getElementById("movieName").value.trim();
         const link = document.getElementById("downloadLink").value.trim();
@@ -54,28 +56,63 @@
             document.getElementById("downloadLink").value = "";
         }
     }
-    
+
     function deleteMovie(index) {
         movies.splice(index, 1);
         localStorage.setItem("movies", JSON.stringify(movies));
         renderTable();
     }
-    
+
     function copyJson() {
         navigator.clipboard.writeText(JSON.stringify(movies, null, 2)).then(() => {
             alert("JSON copied to clipboard");
         });
     }
-    
-    function copyPageSource() {
-        const jsonScript = `<script>let movies = ${JSON.stringify(movies, null, 2)};<\/script>`;
-        const fullPage = document.documentElement.outerHTML.replace('</head>', jsonScript + '</head>');
-        navigator.clipboard.writeText(fullPage).then(() => {
-            alert("Page source copied to clipboard");
+
+    function copyLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert("Link copied to clipboard");
         });
     }
-    
-    renderTable();
+
+    function copyPageSource() {
+        const pageSource = `<!DOCTYPE html>
+
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Movie Download Links</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Movie Download List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Movie Name</th>
+                <th>Download Link</th>
+                <th>Copy Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${movies.map(movie => `<tr>
+                <td>${movie.name}</td>
+                <td><a href='${movie.link}' target='_blank'>Download</a></td>
+                <td><button onclick="navigator.clipboard.writeText('${movie.link}').then(() => alert('Link copied!'))">Copy</button></td>
+            </tr>`).join('')}
+        </tbody>
+    </table>
+</body>
+</html>`;
+            navigator.clipboard.writeText(pageSource).then(() => {
+                alert("Page source copied to clipboard");
+            });
+        }renderTable();
 </script>
 
 </body>
