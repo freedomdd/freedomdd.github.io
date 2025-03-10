@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Download List</title>
+    <style>
+        /* General Styles */
+        html, body {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #E7E7E7;
+            user-select: none;
+            font-family: Tiro;
+        }
+
+        .form-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .form-container button {
+            background-color: #6c5880;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #59476b;
+        }
+
+        #fileTable {
+            width: calc(100% - 10px); margin-left: 5px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #d6d6d6;
+            background-color: white;
+            font-size: 14px;
+            border-radius: 15px;
+        }
+
+        #fileTable th, #fileTable td {
+            border: 1px solid #d6d6d6;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #fileTable th {
+            background-color: #6c5880;
+            color: white;
+        }
+
+        #fileTable tr:first-child th:last-child {border-top-right-radius: 14px;}
+        #fileTable tr:first-child th:first-child {border-top-left-radius: 14px;}
+
+        #fileTable td {
+            color: #666666;
+        }
+
+        /* Dialog Box */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .dialog-header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .dialog input {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #d6d6d6;
+        }
+
+        .dialog button {
+            padding: 8px 12px;
+            border: none;
+            background-color: #6c5880;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .dialog button.cancel {
+            background-color: #d9534f;
+        }
+
+        /* Action Buttons */
+        .action-buttons button {
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        .edit-button {
+            background-color: #2a99da;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        .action-buttons button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <button id="openAddDialogButton">Add New File</button>
+    </div>
+
+    <table id="fileTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>File Name</th>
+                <th>Download Link</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <!-- Add Dialog -->
+    <div class="dialog-overlay" id="addDialogOverlay"></div>
+    <div class="dialog" id="addDialog">
+        <div class="dialog-header">Add New File</div>
+        <input type="text" id="addFileName" placeholder="File Name">
+        <input type="text" id="addFileLink" placeholder="File Link (https://)">
+        <button id="saveAddButton">Add</button>
+        <button class="cancel" id="cancelAddButton">Cancel</button>
+    </div>
+
+    <!-- Edit Dialog -->
+    <div class="dialog-overlay" id="editDialogOverlay"></div>
+    <div class="dialog" id="editDialog">
+        <div class="dialog-header">Edit File</div>
+        <input type="text" id="editFileName" placeholder="File Name">
+        <input type="text" id="editFileLink" placeholder="File Link (https://)">
+        <button id="saveEditButton">Save</button>
+        <button class="cancel" id="cancelEditButton">Cancel</button>
+        <button class="delete" id="deleteEditButton">Delete</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD31LB_AqMNXPTButeHh6BJKY0NVJ3LKWQ",
+            authDomain: "mbixreal.firebaseapp.com",
+            projectId: "mbixreal",
+            storageBucket: "mbixreal.appspot.com",
+            messagingSenderId: "862474308645",
+            appId: "1:862474308645:web:8158f72ee204be4c2d43cc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const collectionName = "1dm";
+
+        const fileTableBody = document.querySelector("#fileTable tbody");
+        const openAddDialogButton = document.getElementById("openAddDialogButton");
+        const addDialog = document.getElementById("addDialog");
+        const addDialogOverlay = document.getElementById("addDialogOverlay");
+        const addFileNameInput = document.getElementById("addFileName");
+        const addFileLinkInput = document.getElementById("addFileLink");
+        const saveAddButton = document.getElementById("saveAddButton");
+        const cancelAddButton = document.getElementById("cancelAddButton");
+
+        const editDialog = document.getElementById("editDialog");
+        const editDialogOverlay = document.getElementById("editDialogOverlay");
+        const editFileNameInput = document.getElementById("editFileName");
+        const editFileLinkInput = document.getElementById("editFileLink");
+        const saveEditButton = document.getElementById("saveEditButton");
+        const cancelEditButton = document.getElementById("cancelEditButton");
+        const deleteEditButton = document.getElementById("deleteEditButton");
+
+        let files = [];
+        let editFileId = null;
+
+        function generateIntentLink(fileLink) {
+            return fileLink.replace("https://", "intent://") + "#Intent;scheme=https;package=idm.internet.download.manager;end;";
+        }
+
+        function populateTable() {
+            fileTableBody.innerHTML = "";
+            files.forEach((file, index) => {
+                const row = document.createElement("tr");
+
+                const serialCell = document.createElement("td");
+                serialCell.textContent = index + 1;
+                row.appendChild(serialCell);
+
+                const fileNameCell = document.createElement("td");
+                fileNameCell.textContent = file.fileName;
+                row.appendChild(fileNameCell);
+
+                const fileLinkCell = document.createElement("td");
+                const downloadLink = document.createElement("a");
+                downloadLink.href = generateIntentLink(file.fileLink);
+                downloadLink.textContent = "Download";
+                downloadLink.style.color = "#6c5880";
+                downloadLink.style.textDecoration = "none";
+                downloadLink.style.fontWeight = "bold";
+                fileLinkCell.appendChild(downloadLink);
+                row.appendChild(fileLinkCell);
+
+                const actionCell = document.createElement("td");
+                actionCell.classList.add("action-buttons");
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "✎";
+                editButton.classList.add("edit-button");
+                editButton.addEventListener("click", () => openEditDialog(file));
+                actionCell.appendChild(editButton);
+
+                row.appendChild(actionCell);
+                fileTableBody.appendChild(row);
+            });
+        }
+
+        async function fetchFiles() {
+            const snapshot = await getDocs(collection(db, collectionName));
+            files = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    fileName: data.fileName,
+                    fileLink: data.fileLink
+                };
+            });
+            populateTable();
+        }
+
+        async function addFile(fileName, fileLink) {
+            const newDocRef = doc(collection(db, collectionName));
+            const newFile = {
+                fileName: fileName,
+                fileLink: fileLink
+            };
+            await setDoc(newDocRef, newFile);
+            fetchFiles();
+        }
+
+        async function updateFile(fileId, fileName, fileLink) {
+            const docRef = doc(db, collectionName, fileId);
+            await updateDoc(docRef, { fileName, fileLink });
+            fetchFiles();
+        }
+
+        async function deleteFile(fileId) {
+            try {
+                const docRef = doc(db, collectionName, fileId);
+                await deleteDoc(docRef);
+                fetchFiles();
+            } catch (error) {
+                console.error("Error deleting file:", error);
+                alert("An error occurred while deleting the file.");
+            }
+        }
+
+        function openAddDialog() {
+            addDialog.style.display = "block";
+            addDialogOverlay.style.display = "block";
+            addFileNameInput.value = "";
+            addFileLinkInput.value = "";
+        }
+
+        function closeAddDialog() {
+            addDialog.style.display = "none";
+            addDialogOverlay.style.display = "none";
+        }
+
+        function openEditDialog(file) {
+            editFileId = file.id;
+            editFileNameInput.value = file.fileName;
+            editFileLinkInput.value = file.fileLink;
+            editDialog.style.display = "block";
+            editDialogOverlay.style.display = "block";
+        }
+
+        function closeEditDialog() {
+            editDialog.style.display = "none";
+            editDialogOverlay.style.display = "none";
+        }
+
+        openAddDialogButton.addEventListener("click", openAddDialog);
+        cancelAddButton.addEventListener("click", closeAddDialog);
+        saveAddButton.addEventListener("click", () => {
+            const fileName = addFileNameInput.value.trim();
+            const fileLink = addFileLinkInput.value.trim();
+            if (fileName && fileLink) {
+                addFile(fileName, fileLink);
+                closeAddDialog();
+            } else {
+                alert("Please fill all fields.");
+            }
+        });
+
+        cancelEditButton.addEventListener("click", closeEditDialog);
+        saveEditButton.addEventListener("click", () => {
+            const fileName = editFileNameInput.value.trim();
+            const fileLink = editFileLinkInput.value.trim();
+            if (fileName && fileLink) {
+                updateFile(editFileId, fileName, fileLink);
+                closeEditDialog();
+            } else {
+                alert("Please fill all fields.");
+            }
+        });
+
+        deleteEditButton.addEventListener("click", () => {
+            if (editFileId) {
+                const confirmDelete = confirm("Are you sure you want to delete this file?");
+                if (confirmDelete) {
+                    deleteFile(editFileId);
+                    closeEditDialog();
+                }
+            } else {
+                alert("No file selected to delete.");
+            }
+        });
+
+        fetchFiles();
+    </script>
+</body>
+</html>
