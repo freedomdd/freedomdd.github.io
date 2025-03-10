@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Download List</title>
     <style>
-        /* General Styles */
-        html, body {
+                html, body {
             max-width: 800px;
             margin: 0 auto;
             background-color: #E7E7E7;
@@ -136,50 +135,42 @@
         .action-buttons button:hover {
             opacity: 0.9;
         }
+        /* Modified Action Buttons */
+        .action-buttons button {
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        .copy-button {
+            background-color: #2a99da;
+            color: white;
+        }
+
+        .action-buttons button:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <button id="openAddDialogButton">Add New File</button>
-    </div>
-
+    <!-- Removed the Add New File button and dialog since this is view-only -->
     <table id="fileTable">
         <thead>
             <tr>
                 <th>#</th>
                 <th>File Name</th>
                 <th>Download Link</th>
-                <th>Edit</th>
+                <th>Copy Link</th>
             </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
 
-    <!-- Add Dialog -->
-    <div class="dialog-overlay" id="addDialogOverlay"></div>
-    <div class="dialog" id="addDialog">
-        <div class="dialog-header">Add New File</div>
-        <input type="text" id="addFileName" placeholder="File Name">
-        <input type="text" id="addFileLink" placeholder="File Link (https://)">
-        <button id="saveAddButton">Add</button>
-        <button class="cancel" id="cancelAddButton">Cancel</button>
-    </div>
-
-    <!-- Edit Dialog -->
-    <div class="dialog-overlay" id="editDialogOverlay"></div>
-    <div class="dialog" id="editDialog">
-        <div class="dialog-header">Edit File</div>
-        <input type="text" id="editFileName" placeholder="File Name">
-        <input type="text" id="editFileLink" placeholder="File Link (https://)">
-        <button id="saveEditButton">Save</button>
-        <button class="cancel" id="cancelEditButton">Cancel</button>
-        <button class="delete" id="deleteEditButton">Delete</button>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD31LB_AqMNXPTButeHh6BJKY0NVJ3LKWQ",
@@ -195,24 +186,7 @@
         const collectionName = "1dm";
 
         const fileTableBody = document.querySelector("#fileTable tbody");
-        const openAddDialogButton = document.getElementById("openAddDialogButton");
-        const addDialog = document.getElementById("addDialog");
-        const addDialogOverlay = document.getElementById("addDialogOverlay");
-        const addFileNameInput = document.getElementById("addFileName");
-        const addFileLinkInput = document.getElementById("addFileLink");
-        const saveAddButton = document.getElementById("saveAddButton");
-        const cancelAddButton = document.getElementById("cancelAddButton");
-
-        const editDialog = document.getElementById("editDialog");
-        const editDialogOverlay = document.getElementById("editDialogOverlay");
-        const editFileNameInput = document.getElementById("editFileName");
-        const editFileLinkInput = document.getElementById("editFileLink");
-        const saveEditButton = document.getElementById("saveEditButton");
-        const cancelEditButton = document.getElementById("cancelEditButton");
-        const deleteEditButton = document.getElementById("deleteEditButton");
-
         let files = [];
-        let editFileId = null;
 
         function generateIntentLink(fileLink) {
             return fileLink.replace("https://", "intent://") + "#Intent;scheme=https;package=idm.internet.download.manager;end;";
@@ -244,11 +218,15 @@
                 const actionCell = document.createElement("td");
                 actionCell.classList.add("action-buttons");
 
-                const editButton = document.createElement("button");
-                editButton.textContent = "✎";
-                editButton.classList.add("edit-button");
-                editButton.addEventListener("click", () => openEditDialog(file));
-                actionCell.appendChild(editButton);
+                const copyButton = document.createElement("button");
+                copyButton.textContent = "Copy";
+                copyButton.classList.add("copy-button");
+                copyButton.addEventListener("click", () => {
+                    navigator.clipboard.writeText(file.fileLink)
+                        .then(() => alert("Link copied to clipboard!"))
+                        .catch(err => alert("Failed to copy link: " + err));
+                });
+                actionCell.appendChild(copyButton);
 
                 row.appendChild(actionCell);
                 fileTableBody.appendChild(row);
@@ -267,95 +245,6 @@
             });
             populateTable();
         }
-
-        async function addFile(fileName, fileLink) {
-            const newDocRef = doc(collection(db, collectionName));
-            const newFile = {
-                fileName: fileName,
-                fileLink: fileLink
-            };
-            await setDoc(newDocRef, newFile);
-            fetchFiles();
-        }
-
-        async function updateFile(fileId, fileName, fileLink) {
-            const docRef = doc(db, collectionName, fileId);
-            await updateDoc(docRef, { fileName, fileLink });
-            fetchFiles();
-        }
-
-        async function deleteFile(fileId) {
-            try {
-                const docRef = doc(db, collectionName, fileId);
-                await deleteDoc(docRef);
-                fetchFiles();
-            } catch (error) {
-                console.error("Error deleting file:", error);
-                alert("An error occurred while deleting the file.");
-            }
-        }
-
-        function openAddDialog() {
-            addDialog.style.display = "block";
-            addDialogOverlay.style.display = "block";
-            addFileNameInput.value = "";
-            addFileLinkInput.value = "";
-        }
-
-        function closeAddDialog() {
-            addDialog.style.display = "none";
-            addDialogOverlay.style.display = "none";
-        }
-
-        function openEditDialog(file) {
-            editFileId = file.id;
-            editFileNameInput.value = file.fileName;
-            editFileLinkInput.value = file.fileLink;
-            editDialog.style.display = "block";
-            editDialogOverlay.style.display = "block";
-        }
-
-        function closeEditDialog() {
-            editDialog.style.display = "none";
-            editDialogOverlay.style.display = "none";
-        }
-
-        openAddDialogButton.addEventListener("click", openAddDialog);
-        cancelAddButton.addEventListener("click", closeAddDialog);
-        saveAddButton.addEventListener("click", () => {
-            const fileName = addFileNameInput.value.trim();
-            const fileLink = addFileLinkInput.value.trim();
-            if (fileName && fileLink) {
-                addFile(fileName, fileLink);
-                closeAddDialog();
-            } else {
-                alert("Please fill all fields.");
-            }
-        });
-
-        cancelEditButton.addEventListener("click", closeEditDialog);
-        saveEditButton.addEventListener("click", () => {
-            const fileName = editFileNameInput.value.trim();
-            const fileLink = editFileLinkInput.value.trim();
-            if (fileName && fileLink) {
-                updateFile(editFileId, fileName, fileLink);
-                closeEditDialog();
-            } else {
-                alert("Please fill all fields.");
-            }
-        });
-
-        deleteEditButton.addEventListener("click", () => {
-            if (editFileId) {
-                const confirmDelete = confirm("Are you sure you want to delete this file?");
-                if (confirmDelete) {
-                    deleteFile(editFileId);
-                    closeEditDialog();
-                }
-            } else {
-                alert("No file selected to delete.");
-            }
-        });
 
         fetchFiles();
     </script>
