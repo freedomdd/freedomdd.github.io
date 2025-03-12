@@ -244,6 +244,9 @@
                     fileLink: data.fileLink
                 };
             });
+// Sort by document ID in descending order (newest first)
+            files.sort((a, b) => b.id.localeCompare(a.id));
+            
             populateTable();
         }
 
